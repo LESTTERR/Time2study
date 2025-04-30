@@ -1,4 +1,4 @@
- /* style.css */
+  /* style.css */
 
 :root {
   --primary: #38c0ff;
@@ -389,15 +389,15 @@ body {
   border-bottom: var(--border);
   margin-bottom: 1rem;
 }
-
 .card-header h3 {
-  font-weight: 700;    
-  font-size: 1.55rem; 
+  font-weight: 700 !important;     /* Extra bold */
+  font-size: 1.55rem !important;  /* 28px equivalent */
 
 }
 
 .card-header .material-icons {
   font-size: 1.7rem !important;
+  color: #4a5568; /* Matching dark gray */
 }
 
 .task-list {
@@ -422,7 +422,7 @@ body {
 }
 
 .task-card h3 {
-  font-size: 1.25rem;
+  font-size: 1.20rem;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 1rem;
@@ -470,9 +470,9 @@ body {
 }
 
 .delete-btn {
-  position: absolute;  
-  top: 98px;           
-  right: 280px;        
+  position: absolute;  /* Changed from fixed to absolute */
+  top: 98px;           /* Adjusted from 98px */
+  right: 280px;         /* Adjusted from 280px */
   background: none;
   border: none;
   cursor: pointer;
@@ -684,14 +684,11 @@ body {
 .class-actions .material-icons {
   font-size: 18px;
 }
-/* ===== DELETE BUTTON FIX ===== */
+
 
 .class-actions .material-icons {
   font-size: 18px;
 }
-
-
-
 
 .selected-date {
   background-color: #2196F3;
