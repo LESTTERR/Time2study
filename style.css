@@ -21,7 +21,7 @@
 }
 
 body {
-  background: var(--background);
+  background: skyblue;
   min-height: 100vh;
 }
 
