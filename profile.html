@@ -1,0 +1,214 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Planner – Profile</title>
+  <link rel="stylesheet" href="gome.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .profile-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .profile-pic .material-icons {
+      font-size: 80px;
+      color: #1E3C72;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-row input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .profile-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-btn { background: #1E3C72; color: white; }
+    .save-btn { background: #2ecc71; color: white; }
+    .logout-btn { background: #e74c3c; color: white; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="content-section active" id="profileSection">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-pic">
+            <span class="material-icons">account_circle</span>
+          </div>
+          <h2 id="userName">Loading...</h2>
+        </div>
+
+        <div class="profile-info">
+          <div class="info-row">
+            <span class="material-icons">email</span>
+            <input type="email" id="userEmail" disabled>
+          </div>
+          <div class="info-row">
+            <span class="material-icons">school</span>
+            <input type="text" id="userSchool" disabled>
+          </div>
+          <div class="info-row">
+            <span class="material-icons">person</span>
+            <input type="text" id="userAge" disabled>
+          </div>
+        </div>
+
+        <div class="profile-buttons">
+          <button class="edit-btn" id="editBtn">Edit</button>
+          <button class="save-btn" id="saveBtn" style="display: none;">Save</button>
+          <button class="logout-btn" id="logoutBtn">Log Out</button>
+        </div>
+      </div>
+    </div>
+
+   <nav class="tab-bar">
+  <a href="home.html" class="tab-item">
+    <span class="material-icons">calendar_today</span>
+    <span class="tab-label">Home</span>
+  </a>
+  <a href="tasks.html" class="tab-item">
+    <span class="material-icons">assignment</span>
+    <span class="tab-label">Tasks</span>
+  </a>
+  <a href="classes.html" class="tab-item">
+    <span class="material-icons">class</span>
+    <span class="tab-label">Classes</span>
+  </a>
+  <a href="profile.html" class="tab-item active">
+    <span class="material-icons">person</span>
+    <span class="tab-label">Profile</span>
+  </a>
+</nav>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      updateDoc 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+      authDomain: "time2study-4f2f3.firebaseapp.com",
+      projectId: "time2study-4f2f3",
+      storageBucket: "time2study-4f2f3.appspot.com",
+      messagingSenderId: "856561565211",
+      appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+      measurementId: "G-9S9C5D6TXF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userSchool = document.getElementById('userSchool');
+    const userAge = document.getElementById('userAge');
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const inputs = document.querySelectorAll('#profileSection input');
+
+    // Load user data
+    const loadProfile = async (uid) => {
+      try {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          userName.textContent = data.fullName || 'Not set';
+          userEmail.value = data.email || 'Not set';
+          userSchool.value = data.school || 'Not set';
+          userAge.value = data.age || 'Not set';
+        }
+      } catch (error) {
+        alert(`Error loading profile: ${error.message}`);
+      }
+    };
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadProfile(user.uid);
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Edit/Save functionality
+    editBtn.addEventListener('click', () => {
+      inputs.forEach(input => input.disabled = false);
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+    });
+
+    saveBtn.addEventListener('click', async () => {
+      try {
+        const user = auth.currentUser;
+        await updateDoc(doc(db, "users", user.uid), {
+          fullName: userName.textContent,
+          school: userSchool.value,
+          age: Number(userAge.value)
+        });
+        inputs.forEach(input => input.disabled = true);
+        saveBtn.style.display = 'none';
+        editBtn.style.display = 'inline-block';
+        alert('Profile updated successfully!');
+      } catch (error) {
+        alert(`Error saving profile: ${error.message}`);
+      }
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        alert(`Logout failed: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>

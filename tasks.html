@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Planner – Tasks</title>
+  <link rel="stylesheet" href="gome.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <div class="content-section active" id="tasksSection">
+      <div class="full-task-card">
+        <div class="card-header">
+          <h3><span class="material-icons">assignment</span> All Tasks</h3>
+        </div>
+        <div class="task-list" id="tasksList">
+          <!-- Tasks will be loaded here from Firestore -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Add-Task Button -->
+    <div class="fab-container">
+      <button class="fab-main material-icons" id="addTaskFab">add</button>
+    </div>
+
+    <nav class="tab-bar">
+  <a href="home.html" class="tab-item">
+    <span class="material-icons">calendar_today</span>
+    <span class="tab-label">Home</span>
+  </a>
+  <a href="tasks.html" class="tab-item active">
+    <span class="material-icons">assignment</span>
+    <span class="tab-label">Tasks</span>
+  </a>
+  <a href="classes.html" class="tab-item">
+    <span class="material-icons">class</span>
+    <span class="tab-label">Classes</span>
+  </a>
+  <a href="profile.html" class="tab-item">
+    <span class="material-icons">person</span>
+    <span class="tab-label">Profile</span>
+  </a>
+</nav>
+
+  </div>
+
+  <!-- ✅ Firebase and Firestore -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      getDocs, 
+      deleteDoc, 
+      doc, 
+      query, 
+      where, 
+      orderBy 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+      authDomain: "time2study-4f2f3.firebaseapp.com",
+      databaseURL: "https://time2study-4f2f3-default-rtdb.firebaseio.com",
+      projectId: "time2study-4f2f3",
+      storageBucket: "time2study-4f2f3.firebasestorage.app",
+      messagingSenderId: "856561565211",
+      appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+      measurementId: "G-9S9C5D6TXF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const tasksList = document.getElementById("tasksList");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const loadTasks = async () => {
+        try {
+          const q = query(
+            collection(db, "tasks"),
+            where("userId", "==", user.uid),
+            orderBy("dueDate")
+          );
+          
+          const snapshot = await getDocs(q);
+          tasksList.innerHTML = "";
+
+          console.log("Total tasks found:", snapshot.size); // Debug log
+
+          if (snapshot.empty) {
+            tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
+            return;
+          }
+
+          snapshot.forEach(docSnap => {
+            const task = docSnap.data();
+            const dueDate = new Date(task.dueDate);
+            
+            // Format date properly
+            const options = { 
+              weekday: 'short', 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            };
+            
+            const div = document.createElement("div");
+            div.className = "task-item";
+            div.innerHTML = `
+              <div class="task-info">
+                <h4>${task.name}</h4>
+                <p>${task.description}</p>
+                <span class="deadline">Deadline: ${dueDate.toLocaleDateString('en-US', options)}</span>
+              </div>
+              <div class="task-actions">
+                <button class="done-btn">Done</button>
+                <button class="delete-btn" data-id="${docSnap.id}">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            `;
+            tasksList.appendChild(div);
+          });
+
+          // Event listeners
+          document.querySelectorAll(".done-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              btn.closest(".task-item").classList.toggle("done");
+            });
+          });
+
+          document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+              try {
+                const id = btn.getAttribute("data-id");
+                await deleteDoc(doc(db, "tasks", id));
+                btn.closest(".task-item").remove();
+                
+                if (!tasksList.children.length) {
+                  tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
+                }
+              } catch (error) {
+                console.error("Delete failed:", error);
+                alert("Failed to delete task. Please try again.");
+              }
+            });
+          });
+
+        } catch (error) {
+          console.error("Task loading error:", error);
+          tasksList.innerHTML = `
+            <p style="color: red; text-align: center; padding: 20px;">
+              Error loading tasks: ${error.message}
+            </p>
+          `;
+        }
+      };
+
+      loadTasks();
+
+      // Add task button
+      document.getElementById("addTaskFab").addEventListener("click", () => {
+        window.location.href = "add-task.html";
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+

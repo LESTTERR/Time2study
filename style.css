@@ -1,0 +1,712 @@
+ /* style.css */
+
+:root {
+  --primary: #38c0ff;
+  --secondary: #6c5ce7;
+  --accent: #ff7675;
+  --background: #f8f9ff;
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --text: #2d3436;
+  --glass: rgba(255, 255, 255, 0.15);
+  --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+  --border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* ========== Base Reset ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: var(--background);
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 500px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+  padding-bottom: 80px;
+}
+
+.content-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 80px;
+  display: none;
+}
+
+.content-section.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== Calendar ========== */
+
+
+.calendar-card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  border: var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  max-height: 500px; /* Increased max-height to accommodate full month */
+}
+
+.calendar-card.expanded .dates-grid {
+  max-height: none; /* Allow full month of dates to be displayed */
+}
+
+.calendar-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#calendarGrid {
+  width: 100%;
+}
+
+.weekdays, .dates-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+}
+
+.weekdays span {
+  font-weight: bold;
+  padding: 0.8rem 0;
+  text-align: center;
+}
+
+.dates-grid {
+  transition: max-height 0.3s ease;
+  max-height: 400px; /* Adjusted for a full month */
+  overflow-y: auto;
+}
+
+.dates-grid span {
+  padding: 0.8rem 0;
+  border-radius: 8px;
+  margin: 0.1rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.selected-date {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+
+/* ========== Floating Action Button (FAB) ========== */
+.fab-container {
+  position: fixed;
+  bottom: 6rem;
+  right: 1.5rem;
+  z-index: 1000;
+}
+
+.fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(56, 192, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+
+.fab-main.active {
+  transform: rotate(135deg);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(255, 71, 87, 0.3);
+}
+
+.fab-options {
+  position: absolute;
+  bottom: 65px;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fab-main.active + .fab-options {
+  display: flex;
+}
+
+.fab-option {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.fab-main.active + .fab-options .fab-option {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fab-option:nth-child(1) { transition-delay: 0.1s; }
+.fab-option:nth-child(2) { transition-delay: 0.2s; }
+
+/* ========== Tab Bar ========== */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(255,255,255,0.95);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  border-top: var(--border);
+  box-shadow: 0 -8px 32px rgba(31,38,135,0.05);
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  color: var(--primary);
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  width: 24px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+
+.tab-item .material-icons {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+  transition: transform 0.3s ease;
+}
+
+.tab-item.active .material-icons {
+  transform: translateY(-5px);
+}
+
+/* ========== Profile Card ========== */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profile-header .profile-pic .material-icons {
+  font-size: 120px;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.profile-header h2 {
+  font-size: 1.8rem;
+  margin-top: 0.5rem;
+  color: var(--text);
+}
+
+.profile-header p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  background: var(--card-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.info-row span.material-icons {
+  margin-right: 10px;
+  color: var(--primary);
+}
+
+.info-row input {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--text);
+  width: 100%;
+}
+
+.info-row input:disabled {
+  color: #555;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.edit-btn, .save-btn, .logout-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--primary);
+  color: white;
+  transition: background 0.3s ease;
+}
+
+.save-btn {
+  background: var(--secondary);
+}
+
+.logout-btn {
+  background: var(--accent);
+}
+
+.edit-btn:hover, .save-btn:hover, .logout-btn:hover {
+  opacity: 0.9;
+}
+
+/* ========== Schedule Card ========== */
+.schedule-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  border: var(--border);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.schedule-card:hover {
+  transform: translateY(-4px);
+}
+
+.schedule-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schedule-list .schedule-item {
+  background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(245,245,245,0.9));
+  border-left: 4px solid var(--primary);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.schedule-item .time {
+  font-weight: 500;
+  color: var(--secondary);
+  min-width: 100px;
+}
+   .schedule-item h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    
+    .schedule-item p {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+/* ========== Task Card ========== */
+.full-task-card .card-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: var(--border);
+  margin-bottom: 1rem;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  border: var(--border);
+  transition: transform 0.3s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+}
+
+.task-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-list .task-item {
+  background: #fff; /* solid white background */
+  border-left: 4px solid var(--accent);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.task-item:hover {
+  background: #fff; /* remain white on hover */
+  transform: none;
+}
+
+.task-info h4 {
+  margin-bottom: 0.25rem;
+  font-size: 1.5rem;
+ font-weight: 700;
+  color: var(--text);
+}
+
+.task-info p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.deadline {
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.task-item {
+  position: relative;
+  padding-right: 40px !important;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 98px;
+  right: 280px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0px;          /* Reduced from 1px */
+  color: #ff4444;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  font-size: 0.8rem;   /* Control icon/text size */
+  width: 50px;         /* Fixed dimensions */
+  height: 28px;
+  display: flex;       /* For better alignment */
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.1); /* Add slight scaling effect */
+}
+
+.task-item.done {
+  opacity: 0.6;
+  background: #f5f5f5; /* light grey for done state */
+  border-left-color: #888;
+}
+
+
+.task-item.done .task-info h4,
+.task-item.done .task-info p,
+.task-item.done .task-info .deadline {
+  text-decoration: line-through;
+}
+
+.task-item.done .deadline {
+  color: #888;
+}
+
+.task-list .task-item {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.task-item:hover {
+  transform: translateX(0); /* disable shift */
+}
+
+
+/* ========== Class Page ========== */
+.class-item,
+.task-item {
+  /* gradient background similar to your schedule‐card */
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(245, 245, 245, 0.9)
+  );
+  border-left: 4px solid var(--primary);
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: var(--border);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.class-item:hover,
+.task-item:hover {
+  transform: translateY(-5px);
+  /* keep the gradient on hover, maybe slightly brighter */
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 1),
+    rgba(245, 245, 245, 1)
+  );
+}
+
+.schedule,
+.deadline {
+  font-size: 0.85rem;
+  color: var(--secondary);
+  font-weight: 500;
+}
+
+/* header styling kept from .full-class-card */
+.full-class-card .card-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: var(--border);
+  margin-bottom: 1rem;
+}
+
+.full-class-card .card-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-actions,
+.class-item .delete-btn {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.done-btn:hover {
+  opacity: 1;
+  transform: scale(1.1); /* Add slight scaling effect */
+}
+
+.done-btn,
+.delete-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.done-btn {
+  background: var(--primary);
+  color: white;
+}
+.delete-btn {
+  background: var(--accent);
+  color: white;
+}
+
+/* rest of your existing .class-item layout rules */
+
+.class-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.class-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 600;
+  color: var(--secondary);
+  font-size: 1rem;
+  min-width: 90px;
+}
+
+.class-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  padding-left: 1rem;
+}
+
+.class-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.instructor {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+
+.class-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.class-actions .delete-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.class-actions .delete-btn:hover {
+  background: #e74c3c;
+}
+
+.class-actions .material-icons {
+  font-size: 18px;
+}
+/* ===== DELETE BUTTON FIX ===== */
+.class-item {
+  position: relative;
+  padding-bottom: 2.5rem; /* Creates space for the button at bottom */
+}
+
+.class-actions {
+  position: fixed;
+  bottom: 85px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.class-actions .delete-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+.class-actions .delete-btn:hover {
+  transform: translateY(-2px);
+}
+
+.class-actions .material-icons {
+  font-size: 18px;
+}
+
+
+
+
+.selected-date {
+  background-color: #2196F3;
+  color: white;
+  border-radius: 50%;
+  padding: 5px;
+}
