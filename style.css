@@ -388,6 +388,16 @@ body {
   margin-bottom: 1rem;
 }
 
+.card-header h3 {
+  font-weight: 700;    
+  font-size: 1.55rem; 
+
+}
+
+.card-header .material-icons {
+  font-size: 1.7rem !important;
+}
+
 .task-list {
   display: flex;
   flex-direction: column;
@@ -458,22 +468,29 @@ body {
 }
 
 .delete-btn {
-  position: absolute;
-  top: 98px;
-  right: 280px;
+  position: absolute;  
+  top: 98px;           
+  right: 280px;        
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0px;          /* Reduced from 1px */
+  padding: 0;
   color: #ff4444;
   opacity: 0.7;
   transition: opacity 0.2s ease;
-  font-size: 0.8rem;   /* Control icon/text size */
-  width: 50px;         /* Fixed dimensions */
+  font-size: 0.8rem;
+  width: 50px;
   height: 28px;
-  display: flex;       /* For better alignment */
+  display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;         /* Ensure it stays above other elements */
+}
+
+/* Add this to the parent container */
+.parent-container {
+  position: relative;  /* Essential for absolute positioning */
+  /* Your existing parent container styles */
 }
 
 .delete-btn:hover {
