@@ -685,36 +685,6 @@ body {
   font-size: 18px;
 }
 /* ===== DELETE BUTTON FIX ===== */
-.class-item {
-  position: relative;
-  padding-bottom: 2.5rem; /* Creates space for the button at bottom */
-}
-
-.class-actions {
-  position: fixed;
-  bottom: 85px;
-  left: 0;
-  right: 0;
-  text-align: center;
-}
-
-.class-actions .delete-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: var(--shadow);
-  transition: transform 0.2s ease;
-}
-
-.class-actions .delete-btn:hover {
-  transform: translateY(-2px);
-}
 
 .class-actions .material-icons {
   font-size: 18px;
