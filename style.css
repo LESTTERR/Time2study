@@ -10,6 +10,8 @@
   --glass: rgba(255, 255, 255, 0.15);
   --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
   --border: 1px solid rgba(255, 255, 255, 0.18);
+  --sky-blue: #87CEEB;
+  --dark-blue: #1E3C72;
 }
 
 /* ========== Base Reset ========== */
@@ -21,7 +23,7 @@
 }
 
 body {
-  background: skyblue;
+  background:linear-gradient(180deg, var(--sky-blue), var(--dark-blue));
   min-height: 100vh;
 }
 
