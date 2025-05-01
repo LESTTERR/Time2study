@@ -701,7 +701,7 @@ text-align: center;
 
 .class-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .class-actions .delete-btn {
