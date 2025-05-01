@@ -107,22 +107,25 @@
           const start12h = to12Hour(start);
           const end12h = to12Hour(end);
 
-          div.innerHTML = `
-            <div class="class-layout">
-              <div class="class-time">
-                <span class="day">${d.days}</span>
-                <span class="time">${start12h} - ${end12h}</span>
-              </div>
-              <div class="class-info">
-                <h4 class="class-title">${d.name}</h4>
-                <p class="instructor">${d.instructor || ''}</p>
-              </div>
-            </div>
-            <div class="class-actions">
-              <button class="delete-btn" data-id="${docSnap.id}">
-                <span class="material-icons">delete</span>
-              </button>
-            </div>`;
+         div.innerHTML = `
+  <div class="class-layout">
+    <div class="class-time">
+      <span class="day">${d.days}</span>
+      <span class="time">${start12h} - ${end12h}</span>
+      <button class="delete-btn small-btn" data-id="${docSnap.id}">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+    <div class="class-info">
+      <div class="class-title-row">
+        <h4 class="class-title">${d.name}</h4>
+      </div>
+      <p class="instructor">${d.instructor || ''}</p>
+    </div>
+  </div>
+`;
+
+
           
           classesList.appendChild(div);
         });
