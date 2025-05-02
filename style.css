@@ -276,7 +276,7 @@ body {
 .info-row {
   display: flex;
   align-items: center;
-  background: var(--card-bg);
+  background: skyblue;
   padding: 0.75rem 1rem;
   border-radius: 12px;
   box-shadow: var(--shadow);
