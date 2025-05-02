@@ -308,7 +308,33 @@
         });
     }
 </script>
+<script>
+  const tabCache = {};
 
+  // Preload tab pages on initial load
+  window.addEventListener("DOMContentLoaded", () => {
+    preloadPage("tasks.html");
+    preloadPage("classes.html");
+    preloadPage("profile.html");
+  });
+
+  function preloadPage(url) {
+    fetch(url)
+      .then(res => res.text())
+      .then(html => {
+        tabCache[url] = html;
+        // You can log to confirm preload:
+        // console.log(`Preloaded: ${url}`);
+      })
+      .catch(err => console.error("Preload failed:", err));
+  }
+
+  // Optional: Hook tab buttons if you use JS-based tab switching (instead of <a href>)
+  // Example:
+  // document.querySelector("[data-target='tasksSection']").addEventListener("click", () => {
+  //   document.getElementById("content").innerHTML = tabCache["tasks.html"];
+  // });
+</script>
 
 
 </body>
