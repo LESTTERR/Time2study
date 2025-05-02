@@ -112,6 +112,17 @@ body {
     navigator.serviceWorker.register("service-worker.js")
       .then(() => console.log("Service Worker Registered"));
   }
+
+          onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await initializeCalendar(user);
+        await loadPendingTasks(user);
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
+    } else {
+        window.location.href = 'login.html';
+    }
+});
 </script>
 </body>
 </html>
