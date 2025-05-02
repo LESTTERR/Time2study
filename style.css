@@ -276,8 +276,9 @@ body {
 .info-row {
   display: flex;
   align-items: center;
-  background: skyblue;
+  background: white;
   padding: 0.75rem 1rem;
+  border: 2px black;
   border-radius: 12px;
   box-shadow: var(--shadow);
 }
