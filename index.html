@@ -110,12 +110,13 @@ body {
         <p>Boost your productivity and achieve your academic goals with our intuitive scheduling system.</p>
         <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
     </div>
-
+<script>
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js")
       .then(() => console.log("Service Worker Registered"));
   }
+      </script>
 
     <script>
   // Simulate loading progress
@@ -132,9 +133,6 @@ body {
       document.querySelector('.app-container').style.display = 'block';
     }
   }, 20); // Speed of loading: 100 * 20ms = 2 seconds
-</script>
-    <script>
-
 </script>
 </body>
 </html>
