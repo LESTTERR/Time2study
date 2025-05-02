@@ -307,34 +307,51 @@
             fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
         });
     }
+
+  nst classesData = await fetchClasses();
+      const tasksData = await fetchTasks();
+      const profileData = await fetchProfile();
+      
+      // Store preloaded data globally (or in a state management library if using one)
+      window.preloadedData = { classesData, tasksData, profileData };
+    } catch (error) {
+      console.error("Error preloading data:", error);
+    }
+  };
+
+  // Fetch classes data from Firestore
+  const fetchClasses = async () => {
+    const classesSnapshot = await db.collection('classes').get();
+    return classesSnapshot.docs.map(doc => doc.data());
+  };
+
+  // Fetch tasks data from Firestore
+  const fetchTasks = async () => {
+    const tasksSnapshot = await db.collection('tasks').get();
+    return tasksSnapshot.docs.map(doc => doc.data());
+  };
+
+  // Fetch profile data from Firestore
+  const fetchProfile = async () => {
+    const profileSnapshot = await db.collection('profile').get();
+    return profileSnapshot.docs.map(doc => doc.data());
+  };
+
+  // Enable Firestore persistence (optional for offline caching)
+  firebase.firestore().enablePersistence()
+    .catch((err) => {
+      if (err.code === 'failed-precondition') {
+        console.log('Persistence failed due to multiple tabs open.');
+      } else if (err.code === 'unimplemented') {
+        console.log('Persistence is not available in this environment.');
+      }
+    });
+
+  // Run the preload function when the page loads
+  window.addEventListener("load", preloadData);
 </script>
-<script>
-  const tabCache = {};
 
-  // Preload tab pages on initial load
-  window.addEventListener("DOMContentLoaded", () => {
-    preloadPage("tasks.html");
-    preloadPage("classes.html");
-    preloadPage("profile.html");
-  });
 
-  function preloadPage(url) {
-    fetch(url)
-      .then(res => res.text())
-      .then(html => {
-        tabCache[url] = html;
-        // You can log to confirm preload:
-        // console.log(`Preloaded: ${url}`);
-      })
-      .catch(err => console.error("Preload failed:", err));
-  }
-
-  // Optional: Hook tab buttons if you use JS-based tab switching (instead of <a href>)
-  // Example:
-  // document.querySelector("[data-target='tasksSection']").addEventListener("click", () => {
-  //   document.getElementById("content").innerHTML = tabCache["tasks.html"];
-  // });
-</script>
 
 
 </body>
