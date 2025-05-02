@@ -13,14 +13,14 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-body {
-  background: linear-gradient(180deg, #87CEEB, #1E3C72);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-   
+
+        body {
+            background: linear-gradient(180deg, #87CEEB, #1E3C72);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .container {
             text-align: center;
@@ -31,6 +31,7 @@ body {
             max-width: 400px;
             width: 80%;
             margin: 1rem;
+            animation: fadeIn 0.8s ease-out;
         }
 
         .logo-image {
@@ -74,65 +75,56 @@ body {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .container {
-            animation: fadeIn 0.8s ease-out;
-        }
-             .loading-bar {
-  height: 100%;
-  width: 0%;
-  background-color: #2196F3;
-  animation: loadbar 2s infinite;
-}
-
-@keyframes loadbar {
-  0% { width: 0%; }
-  50% { width: 80%; }
-  100% { width: 0%; }
-}
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-<div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-     background-color: white; display: flex; flex-direction: column; align-items: center;
-     justify-content: center; z-index: 9999;">
-  <img src="logo.png" alt="Logo" style="width: 100px; height: 100px; margin-bottom: 20px;">
-  <div style="width: 80%; max-width: 300px;">
-    <div style="height: 4px; background-color: #ddd;">
-      <div id="progressBar" style="width: 0%; height: 100%; background-color: #2196F3;"></div>
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+         background-color: white; display: flex; flex-direction: column; align-items: center;
+         justify-content: center; z-index: 9999;">
+        <img src="logo.png" alt="Logo" style="width: 100px; height: 100px; margin-bottom: 20px;">
+        <div style="width: 80%; max-width: 300px;">
+            <div style="height: 4px; background-color: #ddd;">
+                <div id="progressBar" style="width: 0%; height: 100%; background-color: #2196F3;"></div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-     <div class="app-container" style="display: none;">
+
+    <!-- Main App Content -->
+    <div class="app-container container" style="display: none;">
         <img src="logo.png" alt="StudyFlow Logo" class="logo-image">
         <h1>Organize Your Study Schedule</h1>
         <p>Boost your productivity and achieve your academic goals with our intuitive scheduling system.</p>
         <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
     </div>
-<script>
 
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("Service Worker Registered"));
-  }
-      </script>
-
+    <!-- Service Worker Registration -->
     <script>
-  // Simulate loading progress
-  let progress = 0;
-  const progressBar = document.getElementById('progressBar');
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("Service Worker Registered"));
+        }
+    </script>
 
-  const loadingInterval = setInterval(() => {
-    progress += 1;
-    progressBar.style.width = progress + "%";
+    <!-- Loading Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const appContainer = document.querySelector('.app-container');
 
-    if (progress >= 100) {
-      clearInterval(loadingInterval);
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.querySelector('.app-container').style.display = 'block';
-    }
-  }, 20); // Speed of loading: 100 * 20ms = 2 seconds
-</script>
+            const loadingInterval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = progress + "%";
+
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    loadingScreen.style.display = 'none';
+                    appContainer.style.display = 'block';
+                }
+            }, 20); // Total load time: 2 seconds (100 * 20ms)
+        });
+    </script>
 </body>
 </html>
