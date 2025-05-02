@@ -106,260 +106,219 @@
          
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { 
-        getFirestore, 
-        collection, 
-        getDocs, 
-        query, 
-        orderBy, 
-        where 
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    query, 
+    orderBy, 
+    where,
+    enableIndexedDbPersistence 
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
-        authDomain: "time2study-4f2f3.firebaseapp.com",
-        projectId: "time2study-4f2f3",
-        storageBucket: "time2study-4f2f3.appspot.com",
-        messagingSenderId: "856561565211",
-        appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
-        measurementId: "G-9S9C5D6TXF"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+    authDomain: "time2study-4f2f3.firebaseapp.com",
+    projectId: "time2study-4f2f3",
+    storageBucket: "time2study-4f2f3.appspot.com",
+    messagingSenderId: "856561565211",
+    appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+    measurementId: "G-9S9C5D6TXF"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    // Auth state management
-    onAuthStateChanged(auth, async (user) => {
+  // Enable offline persistence
+  enableIndexedDbPersistence(db).catch((err) => {
+    console.warn("Persistence error:", err.code);
+  });
+
+  // Auth listener
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
+      try {
         await initializeCalendar(user);
         await loadPendingTasks(user);
+        await preloadData(user);
+      } catch (err) {
+        console.error("Init error:", err);
+      } finally {
         document.getElementById('loadingScreen').style.display = 'none';
         document.querySelector('.app-container').style.display = 'block';
+      }
     } else {
-        window.location.href = 'login.html';
+      window.location.href = 'login.html';
     }
-});
+  });
 
-    async function initializeCalendar(user) {
-        const monthYear = document.getElementById('monthYear');
-        const datesGrid = document.getElementById('datesGrid');
-        const calendarGrid = document.getElementById('calendarGrid');
-        const toggleCalendar = document.getElementById('toggleCalendar');
-        const now = new Date();
+  // ========== MAIN FUNCTIONS ==========
 
-        // Calendar initialization code (same as before)
-        monthYear.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-        const firstDow = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-        
-        // Clear existing dates
-        datesGrid.innerHTML = '';
-        
-        for (let i = 0; i < firstDow; i++) {
-            const b = document.createElement('span');
-            b.className = 'blank';
-            datesGrid.appendChild(b);
+  async function initializeCalendar(user) {
+    const monthYear = document.getElementById('monthYear');
+    const datesGrid = document.getElementById('datesGrid');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const toggleCalendar = document.getElementById('toggleCalendar');
+    const now = new Date();
+
+    monthYear.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const firstDow = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+    datesGrid.innerHTML = '';
+
+    for (let i = 0; i < firstDow; i++) {
+      const blank = document.createElement('span');
+      blank.className = 'blank';
+      datesGrid.appendChild(blank);
+    }
+
+    const dayCount = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= dayCount; d++) {
+      const day = document.createElement('span');
+      day.textContent = d;
+      datesGrid.appendChild(day);
+    }
+
+    toggleCalendar.addEventListener('click', () => {
+      calendarGrid.classList.toggle('collapsed');
+      toggleCalendar.classList.toggle('collapsed');
+    });
+
+    setupDateClickEvents(user);
+    highlightToday();
+  }
+
+  async function loadPendingTasks(user) {
+    const pending = document.getElementById('pendingTasks');
+    const q = query(
+      collection(db, 'tasks'),
+      where("userId", "==", user.uid),
+      orderBy('dueDate')
+    );
+
+    const snap = await getDocs(q);
+    const now = new Date();
+
+    if (snap.empty) {
+      pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
+    } else {
+      pending.innerHTML = '';
+      snap.forEach(doc => {
+        const t = doc.data();
+        const due = new Date(t.dueDate);
+        if (due >= now) {
+          const item = document.createElement('div');
+          item.className = 'task-item';
+          item.innerHTML = `
+            <div class="task-info">
+              <h4>${t.name}</h4>
+              <p>${t.description}</p>
+              <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
+            </div>
+          `;
+          pending.appendChild(item);
         }
+      });
+    }
+  }
 
-        const dayCount = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        for (let d = 1; d <= dayCount; d++) {
-            const s = document.createElement('span');
-            s.textContent = d;
-            datesGrid.appendChild(s);
-        }
+  async function preloadData(user) {
+    const classesData = await fetchCollection('classes', user.uid);
+    const tasksData = await fetchCollection('tasks', user.uid);
+    const profileData = await fetchCollection('profile', user.uid);
+    window.preloadedData = { classesData, tasksData, profileData };
+  }
 
-        toggleCalendar.addEventListener('click', () => {
-            calendarGrid.classList.toggle('collapsed');
-            toggleCalendar.classList.toggle('collapsed');
+  async function fetchCollection(name, uid) {
+    const q = query(collection(db, name), where("userId", "==", uid));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => doc.data());
+  }
+
+  function setupDateClickEvents(user) {
+    const datesGrid = document.getElementById('datesGrid');
+    datesGrid.querySelectorAll('span').forEach(s => {
+      if (!s.classList.contains('blank')) {
+        s.addEventListener('click', () => {
+          highlight(s);
+          showFor(parseInt(s.textContent), user);
         });
+      }
+    });
+  }
 
-        setupDateClickEvents(user);
-        highlightToday();
+  function highlightToday() {
+    const now = new Date();
+    const datesGrid = document.getElementById('datesGrid');
+    const todayNum = now.getDate();
+    const todaySpan = [...datesGrid.children].find(ch => ch.textContent == todayNum);
+    if (todaySpan) {
+      highlight(todaySpan);
+      showFor(todayNum, auth.currentUser);
     }
+  }
 
-    async function loadPendingTasks(user) {
-        const pending = document.getElementById('pendingTasks');
-        const q = query(
-            collection(db, 'tasks'),
-            where("userId", "==", user.uid),
-            orderBy('dueDate')
-        );
-        
-        const tSnap = await getDocs(q);
-        
-        if (tSnap.empty) {
-            pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
-        } else {
-            pending.innerHTML = '';
-            const now = new Date();
-            
-            tSnap.forEach(doc => {
-                const t = doc.data();
-                const due = new Date(t.dueDate);
-                if (due >= now) {
-                    const ti = document.createElement('div');
-                    ti.className = 'task-item';
-                    ti.innerHTML = `
-                        <div class="task-info">
-                            <h4>${t.name}</h4>
-                            <p>${t.description}</p>
-                            <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
-                        </div>
-                    `;
-                    pending.appendChild(ti);
-                }
-            });
-        }
-    }
+  function highlight(el) {
+    const selectedEl = document.querySelector('.selected-date');
+    if (selectedEl) selectedEl.classList.remove('selected-date');
+    el.classList.add('selected-date');
+  }
 
-    function setupDateClickEvents(user) {
-        const datesGrid = document.getElementById('datesGrid');
-        datesGrid.querySelectorAll('span').forEach(s => {
-            if (!s.classList.contains('blank')) {
-                s.addEventListener('click', () => {
-                    highlight(s);
-                    showFor(parseInt(s.textContent), user);
-                });
-            }
-        });
-    }
+  async function showFor(dayNum, user) {
+    const scheduleList = document.getElementById('scheduleList');
+    scheduleList.innerHTML = '';
+    const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
+    const wd = sel.toLocaleString('en-US', { weekday: 'short' });
 
-    function highlightToday() {
-        const now = new Date();
-        const datesGrid = document.getElementById('datesGrid');
-        const todayNum = now.getDate();
-        const todaySpan = [...datesGrid.children].find(ch => ch.textContent == todayNum);
-        if (todaySpan) {
-            highlight(todaySpan);
-            showFor(todayNum, auth.currentUser);
-        }
-    }
+    const q = query(collection(db, 'classes'), where("userId", "==", user.uid));
+    const snap = await getDocs(q);
+    let found = false;
 
-    function to12HourFormat(hours, minutes) {
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12;
-        return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-    }
-
-    async function showFor(dayNum, user) {
-        const scheduleList = document.getElementById('scheduleList');
-        clearSchedule();
-        const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
-        const wd = sel.toLocaleString('en-US', { weekday: 'short' });
-        
-        const q = query(
-            collection(db, 'classes'),
-            where("userId", "==", user.uid)
-        );
-        
-        const snap = await getDocs(q);
-        let found = false;
-
-        snap.forEach(doc => {
-            const c = doc.data();
-            const classDays = c.days.split(/,\s*/).map(d => d.substring(0, 3));
-            if (classDays.includes(wd)) {
-                found = true;
-                const [startTime, endTime] = c.time.split(' - ');
-                const [startHours, startMinutes] = startTime.split(':');
-                const [endHours, endMinutes] = endTime.split(':');
-
-                const timeRange = `${to12HourFormat(parseInt(startHours), parseInt(startMinutes))} – ${to12HourFormat(parseInt(endHours), parseInt(endMinutes))}`;
-
-                const it = document.createElement('div');
-                it.className = 'schedule-item';
-                it.innerHTML = `
-                    <div class="time">${timeRange}</div>
-                    <div class="details">
-                        <h4>${c.name || 'Unnamed Class'}</h4>
-                        <p>${c.instructor || ''}</p>
-                    </div>
-                `;
-                scheduleList.appendChild(it);
-            }
-        });
-
-        if (!found) {
-            scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
-        }
-    }
-
-    function clearSchedule() {
-        const scheduleList = document.getElementById('scheduleList');
-        scheduleList.innerHTML = '';
-    }
-
-    function highlight(el) {
-        const selectedEl = document.querySelector('.selected-date');
-        if (selectedEl) selectedEl.classList.remove('selected-date');
-        el.classList.add('selected-date');
-    }
-
-    // FAB functionality
-    const fabMain = document.getElementById('fabMain');
-    const fabOpts = document.querySelector('.fab-options');
-    if (fabMain) {
-        fabMain.addEventListener('click', () => {
-            fabMain.classList.toggle('open');
-            fabOpts.classList.toggle('show');
-            fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
-        });
-    }
-
-      
-       // Initialize Firebase app
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  // Preload data in the background
-  const preloadData = async () => {
-    try {
-      const classesData = await fetchClasses();
-      const tasksData = await fetchTasks();
-      const profileData = await fetchProfile();
-      
-      // Store preloaded data globally (or in a state management library if using one)
-      window.preloadedData = { classesData, tasksData, profileData };
-    } catch (error) {
-      console.error("Error preloading data:", error);
-    }
-  };
-
-  // Fetch classes data from Firestore
-  const fetchClasses = async () => {
-    const classesSnapshot = await db.collection('classes').get();
-    return classesSnapshot.docs.map(doc => doc.data());
-  };
-
-  // Fetch tasks data from Firestore
-  const fetchTasks = async () => {
-    const tasksSnapshot = await db.collection('tasks').get();
-    return tasksSnapshot.docs.map(doc => doc.data());
-  };
-
-  // Fetch profile data from Firestore
-  const fetchProfile = async () => {
-    const profileSnapshot = await db.collection('profile').get();
-    return profileSnapshot.docs.map(doc => doc.data());
-  };
-
-  // Enable Firestore persistence (optional for offline caching)
-  firebase.firestore().enablePersistence()
-    .catch((err) => {
-      if (err.code === 'failed-precondition') {
-        console.log('Persistence failed due to multiple tabs open.');
-      } else if (err.code === 'unimplemented') {
-        console.log('Persistence is not available in this environment.');
+    snap.forEach(doc => {
+      const c = doc.data();
+      const days = c.days.split(/,\s*/).map(d => d.slice(0, 3));
+      if (days.includes(wd)) {
+        found = true;
+        const [start, end] = c.time.split(' - ');
+        const timeRange = `${formatTime(start)} – ${formatTime(end)}`;
+        const item = document.createElement('div');
+        item.className = 'schedule-item';
+        item.innerHTML = `
+          <div class="time">${timeRange}</div>
+          <div class="details">
+            <h4>${c.name || 'Unnamed Class'}</h4>
+            <p>${c.instructor || ''}</p>
+          </div>
+        `;
+        scheduleList.appendChild(item);
       }
     });
 
-  // Run the preload function when the page loads
-  window.addEventListener("load", preloadData);
+    if (!found) {
+      scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
+    }
+  }
+
+  function formatTime(timeStr) {
+    let [h, m] = timeStr.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2, '0')} ${ampm}`;
+  }
+
+  // FAB button
+  const fabMain = document.getElementById('fabMain');
+  const fabOpts = document.querySelector('.fab-options');
+  if (fabMain) {
+    fabMain.addEventListener('click', () => {
+      fabMain.classList.toggle('open');
+      fabOpts.classList.toggle('show');
+      fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
+    });
+  }
 </script>
-
-
 
 
 
