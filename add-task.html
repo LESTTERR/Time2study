@@ -47,9 +47,9 @@
     
     label {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 1px;
-  margin-top: 12px;
+  margin-top: 5px;
   color: red;
   font-size: 1rem;
 }
@@ -115,8 +115,8 @@
     <form id="taskForm">
       <input type="text" id="taskName" placeholder="Task Name" required>
       <textarea id="taskDesc" placeholder="Description" required></textarea>
-          <label for="taskDateTime">Deadline</label>
-      <input type="datetime-local" id="taskDateTime" placeholder="Deadline" required>
+          <label for="taskDateTime">Deadline:</label>
+      <input type="datetime-local" id="taskDateTime"  required>
       <button type="submit">Save Task</button>
     </form>
     <button id="backTasks">← Back to Tasks</button>
