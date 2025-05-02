@@ -308,7 +308,15 @@
         });
     }
 
-  nst classesData = await fetchClasses();
+      
+       // Initialize Firebase app
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Preload data in the background
+  const preloadData = async () => {
+    try {
+      const classesData = await fetchClasses();
       const tasksData = await fetchTasks();
       const profileData = await fetchProfile();
       
@@ -350,6 +358,8 @@
   // Run the preload function when the page loads
   window.addEventListener("load", preloadData);
 </script>
+
+
 
 
 
