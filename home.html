@@ -23,14 +23,36 @@
     }
     .expand-icon.collapsed {
       transform: rotate(-180deg);
-    }
+      
+      }
+    
+      
+      
+      .loading-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #2196F3;
+  animation: loadbar 2s infinite;
+}
+
+@keyframes loadbar {
+  0% { width: 0%; }
+  50% { width: 80%; }
+  100% { width: 0%; }
+}
+
+    
   </style>
-</head>
-<body> 
+  </head>
+  <body>
   
-  <div id="loadingScreen" style="text-align:center; padding: 50px; font-size: 18px;">
-    Loading your dashboard...
+<div id="loadingScreen" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:white;">
+  <img src="logo.png" alt="Logo" style="width:120px; margin-bottom:20px;">
+  <div style="width:80%; height:4px; background:#ccc;">
+    <div class="loading-bar"></div>
   </div>
+</div>
+  
   <div class="app-container" style="display: none;"> 
     <div class="content-section active" id="homeSection">
      
