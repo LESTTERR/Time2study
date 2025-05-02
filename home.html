@@ -27,6 +27,10 @@
   </style>
 </head>
 <body>
+  
+  <div id="loadingScreen" style="text-align:center; padding: 50px; font-size: 18px;">
+    Loading your dashboard...
+  </div>
   <div class="app-container">
     <div class="content-section active" id="homeSection">
      
@@ -105,14 +109,16 @@
     const auth = getAuth(app);
 
     // Auth state management
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            initializeCalendar(user);
-            loadPendingTasks(user);
-        } else {
-            window.location.href = 'login.html';
-        }
-    });
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await initializeCalendar(user);
+        await loadPendingTasks(user);
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
+    } else {
+        window.location.href = 'login.html';
+    }
+});
 
     async function initializeCalendar(user) {
         const monthYear = document.getElementById('monthYear');
