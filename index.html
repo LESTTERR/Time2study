@@ -111,7 +111,13 @@ body {
         <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
     </div>
 
-<script>
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker Registered"));
+  }
+
+    <script>
   // Simulate loading progress
   let progress = 0;
   const progressBar = document.getElementById('progressBar');
@@ -128,10 +134,6 @@ body {
   }, 20); // Speed of loading: 100 * 20ms = 2 seconds
 </script>
     <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("Service Worker Registered"));
-  }
 
 </script>
 </body>
