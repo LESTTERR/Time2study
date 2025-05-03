@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Planner – Home</title>
+  <link rel="stylesheet" href="gome.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .selected-date {
+      background-color: #2196F3;
+      color: white;
+      border-radius: 50%;
+      padding: 5px;
+    }
+    #calendarGrid.collapsed .dates-grid span:nth-child(n+8) {
+      display: none;
+    }
+    .expand-icon {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .expand-icon.collapsed {
+      transform: rotate(-180deg);
+      
+      }
+    
+      
+      
+      .loading-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #2196F3;
+  animation: loadbar 2s infinite;
+}
+
+@keyframes loadbar {
+  0% { width: 0%; }
+  50% { width: 80%; }
+  100% { width: 0%; }
+}
+
+    
+  </style>
+  </head>
+  <body>
+  
+<div id="loadingScreen" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:white;">
+  <img src="logo.png" alt="Logo" style="width:120px; margin-bottom:20px;">
+  <div style="width:80%; height:4px; background:#ccc;">
+    <div class="loading-bar"></div>
+  </div>
+</div>
+  
+  <div class="app-container" style="display: none;"> 
+    <div class="content-section active" id="homeSection">
+     
+ <div class="calendar-card">
+        <div class="calendar-header">
+          <h2 id="monthYear"></h2>
+          <span class="material-icons expand-icon" id="toggleCalendar">expand_more</span>
+        </div>
+        <div class="calendar-grid" id="calendarGrid">
+          <div class="weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span>
+            <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="dates-grid" id="datesGrid"></div>
+        </div>
+      </div>
+
+      <div class="schedule-card">
+        <div class="card-header">
+          <h3><span class="material-icons">schedule</span>Schedule</h3>
+        </div>
+        <div class="schedule-list" id="scheduleList"></div>
+      </div>
+
+      <div class="task-card">
+        <div class="card-header">
+          <h3><span class="material-icons">assignment</span>Pending Tasks</h3>
+        </div>
+        <div class="task-list" id="pendingTasks"></div>
+      </div>
+
+      <div class="fab-container">
+        <button class="fab-main material-icons" id="fabMain">add</button>
+        <div class="fab-options">
+          <a href="add-task.html" class="fab-option"><span class="material-icons">assignment</span></a>
+          <a href="add-class.html" class="fab-option"><span class="material-icons">school</span></a>
+        </div>
+      </div>
+    </div>
+
+    <nav class="tab-bar">
+      <button class="tab-item active" data-target="homeSection"><span class="material-icons">calendar_today</span><span class="tab-label">Home</span></button>
+      <button class="tab-item" data-target="tasksSection"><span class="material-icons">assignment</span><span class="tab-label">Tasks</span></button>
+      <button class="tab-item" data-target="classesSection"><span class="material-icons">class</span><span class="tab-label">Classes</span></button>
+      <button class="tab-item" data-target="profileSection"><span class="material-icons">person</span><span class="tab-label">Profile</span></button>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+         
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getFirestore, 
+        collection, 
+        getDocs, 
+        query, 
+        orderBy, 
+        where 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+        authDomain: "time2study-4f2f3.firebaseapp.com",
+        projectId: "time2study-4f2f3",
+        storageBucket: "time2study-4f2f3.appspot.com",
+        messagingSenderId: "856561565211",
+        appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+        measurementId: "G-9S9C5D6TXF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Auth state management
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await initializeCalendar(user);
+        await loadPendingTasks(user);
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+    async function initializeCalendar(user) {
+        const monthYear = document.getElementById('monthYear');
+        const datesGrid = document.getElementById('datesGrid');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const toggleCalendar = document.getElementById('toggleCalendar');
+        const now = new Date();
+
+        // Calendar initialization code (same as before)
+        monthYear.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const firstDow = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+        
+        // Clear existing dates
+        datesGrid.innerHTML = '';
+        
+        for (let i = 0; i < firstDow; i++) {
+            const b = document.createElement('span');
+            b.className = 'blank';
+            datesGrid.appendChild(b);
+        }
+
+        const dayCount = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        for (let d = 1; d <= dayCount; d++) {
+            const s = document.createElement('span');
+            s.textContent = d;
+            datesGrid.appendChild(s);
+        }
+
+        toggleCalendar.addEventListener('click', () => {
+            calendarGrid.classList.toggle('collapsed');
+            toggleCalendar.classList.toggle('collapsed');
+        });
+
+        setupDateClickEvents(user);
+        highlightToday();
+    }
+
+    async function loadPendingTasks(user) {
+        const pending = document.getElementById('pendingTasks');
+        const q = query(
+            collection(db, 'tasks'),
+            where("userId", "==", user.uid),
+            orderBy('dueDate')
+        );
+        
+        const tSnap = await getDocs(q);
+        
+        if (tSnap.empty) {
+            pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
+        } else {
+            pending.innerHTML = '';
+            const now = new Date();
+            
+            tSnap.forEach(doc => {
+                const t = doc.data();
+                const due = new Date(t.dueDate);
+                if (due >= now) {
+                    const ti = document.createElement('div');
+                    ti.className = 'task-item';
+                    ti.innerHTML = `
+                        <div class="task-info">
+                            <h4>${t.name}</h4>
+                            <p>${t.description}</p>
+                            <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
+                        </div>
+                    `;
+                    pending.appendChild(ti);
+                }
+            });
+        }
+    }
+
+    function setupDateClickEvents(user) {
+        const datesGrid = document.getElementById('datesGrid');
+        datesGrid.querySelectorAll('span').forEach(s => {
+            if (!s.classList.contains('blank')) {
+                s.addEventListener('click', () => {
+                    highlight(s);
+                    showFor(parseInt(s.textContent), user);
+                });
+            }
+        });
+    }
+
+    function highlightToday() {
+        const now = new Date();
+        const datesGrid = document.getElementById('datesGrid');
+        const todayNum = now.getDate();
+        const todaySpan = [...datesGrid.children].find(ch => ch.textContent == todayNum);
+        if (todaySpan) {
+            highlight(todaySpan);
+            showFor(todayNum, auth.currentUser);
+        }
+    }
+
+    function to12HourFormat(hours, minutes) {
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    }
+
+    async function showFor(dayNum, user) {
+        const scheduleList = document.getElementById('scheduleList');
+        clearSchedule();
+        const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
+        const wd = sel.toLocaleString('en-US', { weekday: 'short' });
+        
+        const q = query(
+            collection(db, 'classes'),
+            where("userId", "==", user.uid)
+        );
+        
+        const snap = await getDocs(q);
+        let found = false;
+
+        snap.forEach(doc => {
+            const c = doc.data();
+            const classDays = c.days.split(/,\s*/).map(d => d.substring(0, 3));
+            if (classDays.includes(wd)) {
+                found = true;
+                const [startTime, endTime] = c.time.split(' - ');
+                const [startHours, startMinutes] = startTime.split(':');
+                const [endHours, endMinutes] = endTime.split(':');
+
+                const timeRange = `${to12HourFormat(parseInt(startHours), parseInt(startMinutes))} – ${to12HourFormat(parseInt(endHours), parseInt(endMinutes))}`;
+
+                const it = document.createElement('div');
+                it.className = 'schedule-item';
+                it.innerHTML = `
+                    <div class="time">${timeRange}</div>
+                    <div class="details">
+                        <h4>${c.name || 'Unnamed Class'}</h4>
+                        <p>${c.instructor || ''}</p>
+                    </div>
+                `;
+                scheduleList.appendChild(it);
+            }
+        });
+
+        if (!found) {
+            scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
+        }
+    }
+
+    function clearSchedule() {
+        const scheduleList = document.getElementById('scheduleList');
+        scheduleList.innerHTML = '';
+    }
+
+    function highlight(el) {
+        const selectedEl = document.querySelector('.selected-date');
+        if (selectedEl) selectedEl.classList.remove('selected-date');
+        el.classList.add('selected-date');
+    }
+
+    // FAB functionality
+    const fabMain = document.getElementById('fabMain');
+    const fabOpts = document.querySelector('.fab-options');
+    if (fabMain) {
+        fabMain.addEventListener('click', () => {
+            fabMain.classList.toggle('open');
+            fabOpts.classList.toggle('show');
+            fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
+        });
+    }
+</script>
+
+
+
+</body>
+</html>
