@@ -97,7 +97,6 @@
         }
     </script>
     
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -115,16 +114,15 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoRedirect = urlParams.get('autoRedirect');
+
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Already logged in, go directly to home
-      window.location.href = "home.html";
-    } else {
-      // Not logged in, show get started or login
-      window.location.href = "get-started.html"; // or login.html if you prefer
+    if (user && autoRedirect) {
+      window.location.href = 'home.html';
     }
   });
 </script>
-    
+
 </body>
 </html>
