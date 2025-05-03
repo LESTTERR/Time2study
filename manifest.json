@@ -1,7 +1,7 @@
 {
   "name": "Time 2 Study",
   "short_name": "Time2Study",
-  "start_url": "index.html?autoRedirect=true"
+  "start_url": "/Time2study/index.html?autoRedirect=true",
   
   "display": "standalone",
   "background_color": "#ffffff",
