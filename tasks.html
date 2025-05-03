@@ -49,134 +49,165 @@
   </div>
 
   <!-- ✅ Firebase and Firestore -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { 
-      getFirestore, 
-      collection, 
-      getDocs, 
-      deleteDoc, 
-      doc, 
-      query, 
-      where, 
-      orderBy 
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
-      authDomain: "time2study-4f2f3.firebaseapp.com",
-      databaseURL: "https://time2study-4f2f3-default-rtdb.firebaseio.com",
-      projectId: "time2study-4f2f3",
-      storageBucket: "time2study-4f2f3.firebasestorage.app",
-      messagingSenderId: "856561565211",
-      appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
-      measurementId: "G-9S9C5D6TXF"
-    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const tasksList = document.getElementById("tasksList");
+<!-- ✅ Firebase and Firestore -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    deleteDoc, 
+    doc, 
+    query, 
+    where, 
+    orderBy 
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'login.html';
+  const firebaseConfig = {
+    apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+    authDomain: "time2study-4f2f3.firebaseapp.com",
+    databaseURL: "https://time2study-4f2f3-default-rtdb.firebaseio.com",
+    projectId: "time2study-4f2f3",
+    storageBucket: "time2study-4f2f3.firebasestorage.app",
+    messagingSenderId: "856561565211",
+    appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+    measurementId: "G-9S9C5D6TXF"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const tasksList = document.getElementById("tasksList");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const displayTasks = (tasks) => {
+      tasksList.innerHTML = "";
+
+      if (!tasks.length) {
+        tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
         return;
       }
 
-      const loadTasks = async () => {
-        try {
-          const q = query(
-            collection(db, "tasks"),
-            where("userId", "==", user.uid),
-            orderBy("dueDate")
-          );
-          
-          const snapshot = await getDocs(q);
-          tasksList.innerHTML = "";
+      tasks.forEach(task => {
+        const dueDate = new Date(task.dueDate);
+        const options = { 
+          weekday: 'short', 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        };
 
-          console.log("Total tasks found:", snapshot.size); // Debug log
-
-          if (snapshot.empty) {
-            tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
-            return;
-          }
-
-          snapshot.forEach(docSnap => {
-            const task = docSnap.data();
-            const dueDate = new Date(task.dueDate);
-            
-            // Format date properly
-            const options = { 
-              weekday: 'short', 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            };
-            
-            const div = document.createElement("div");
-            div.className = "task-item";
-            div.innerHTML = `
-              <div class="task-info">
-                <h4>${task.name}</h4>
-                <p>${task.description}</p>
-                <span class="deadline">Deadline: ${dueDate.toLocaleDateString('en-US', options)}</span>
-              </div>
-              <div class="task-actions">
-                <button class="done-btn">Done</button>
-                <button class="delete-btn" data-id="${docSnap.id}">
-                  <span class="material-icons">delete</span>
-                </button>
-              </div>
-            `;
-            tasksList.appendChild(div);
-          });
-
-          // Event listeners
-          document.querySelectorAll(".done-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-              btn.closest(".task-item").classList.toggle("done");
-            });
-          });
-
-          document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-              try {
-                const id = btn.getAttribute("data-id");
-                await deleteDoc(doc(db, "tasks", id));
-                btn.closest(".task-item").remove();
-                
-                if (!tasksList.children.length) {
-                  tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
-                }
-              } catch (error) {
-                console.error("Delete failed:", error);
-                alert("Failed to delete task. Please try again.");
-              }
-            });
-          });
-
-        } catch (error) {
-          console.error("Task loading error:", error);
-          tasksList.innerHTML = `
-            <p style="color: red; text-align: center; padding: 20px;">
-              Error loading tasks: ${error.message}
-            </p>
-          `;
-        }
-      };
-
-      loadTasks();
-
-      // Add task button
-      document.getElementById("addTaskFab").addEventListener("click", () => {
-        window.location.href = "add-task.html";
+        const div = document.createElement("div");
+        div.className = "task-item";
+        div.innerHTML = `
+          <div class="task-info">
+            <h4>${task.name}</h4>
+            <p>${task.description}</p>
+            <span class="deadline">Deadline: ${dueDate.toLocaleDateString('en-US', options)}</span>
+          </div>
+          <div class="task-actions">
+            <button class="done-btn">Done</button>
+            <button class="delete-btn" data-id="${task.id}">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+        `;
+        tasksList.appendChild(div);
       });
+
+      // Reattach button events
+      document.querySelectorAll(".done-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.closest(".task-item").classList.toggle("done");
+        });
+      });
+
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          try {
+            const id = btn.getAttribute("data-id");
+            await deleteDoc(doc(db, "tasks", id));
+            btn.closest(".task-item").remove();
+
+            if (!tasksList.children.length) {
+              tasksList.innerHTML = "<p style='text-align:center;color:gray;'>No tasks found. Start by adding one!</p>";
+            }
+
+            // Remove from localStorage too
+            const cached = localStorage.getItem("tasks");
+            if (cached) {
+              const cachedTasks = JSON.parse(cached).filter(t => t.id !== id);
+              localStorage.setItem("tasks", JSON.stringify(cachedTasks));
+            }
+
+          } catch (error) {
+            console.error("Delete failed:", error);
+            alert("Failed to delete task. Please try again.");
+          }
+        });
+      });
+    };
+
+    const loadTasks = async () => {
+      // Step 1: Show cached tasks immediately
+      const cached = localStorage.getItem("tasks");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          displayTasks(parsed);
+        } catch (err) {
+          console.warn("Failed to parse cached tasks:", err);
+        }
+      }
+
+      // Step 2: Fetch fresh data from Firestore
+      try {
+        const q = query(
+          collection(db, "tasks"),
+          where("userId", "==", user.uid),
+          orderBy("dueDate")
+        );
+
+        const snapshot = await getDocs(q);
+        const tasks = snapshot.docs.map(docSnap => ({
+          ...docSnap.data(),
+          id: docSnap.id  // Include ID for deletion
+        }));
+
+        displayTasks(tasks);
+        localStorage.setItem("tasks", JSON.stringify(tasks)); // Update cache
+
+      } catch (error) {
+        console.error("Task loading error:", error);
+        tasksList.innerHTML = `
+          <p style="color: red; text-align: center; padding: 20px;">
+            Error loading tasks: ${error.message}
+          </p>
+        `;
+      }
+    };
+
+    loadTasks();
+
+    // Add task button
+    document.getElementById("addTaskFab").addEventListener("click", () => {
+      window.location.href = "add-task.html";
     });
-  </script>
+  });
+</script>
+
+
+
 </body>
 </html>
 
