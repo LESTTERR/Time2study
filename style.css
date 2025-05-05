@@ -24,16 +24,16 @@
 
 body {
   background:linear-gradient(180deg, var(--sky-blue), var(--dark-blue));
-  min-height: 200vh;
+  min-height: 100vh;
 }
 
 .app-container {
   max-width: 500px;
   margin: 0 auto;
-  height: 200vh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
   padding: 20px;
   padding-bottom: 80px;
 }
