@@ -22,14 +22,16 @@
   font-family: 'Poppins', sans-serif;
 }
 
-html, body {
-  height: 100%;
+html {
+  min-height: 100%;
+  background: linear-gradient(180deg, var(--sky-blue), var(--dark-blue));
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 body {
-  background: linear-gradient(180deg, var(--sky-blue), var(--dark-blue));
-  min-height: 100vh;
-  overflow-y: auto;
+  min-height: 100%;
 }
 
 .app-container {
