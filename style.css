@@ -812,7 +812,7 @@ text-align: center;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 40px;
+  padding-top: 10px;
   box-sizing: border-box;
   width: 100%; 
 }
