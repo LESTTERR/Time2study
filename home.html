@@ -54,7 +54,7 @@
   
  
 
- <div class="app-container">
+<div class="app-container" style="display: none;">
   <div class="content-section active" id="homeSection">
 
     <!-- Dots at the top center -->
@@ -156,13 +156,18 @@
     const auth = getAuth(app);
 
     // Auth state management
-    onAuthStateChanged(auth, async (user) => {
+ onAuthStateChanged(auth, async (user) => {
     if (user) {
         await initializeCalendar(user);
         await loadPendingTasks(user);
         await loadStatistics(user);
+        // Hide loading screen
         document.getElementById('loadingScreen').style.display = 'none';
+        // Show app content
         document.querySelector('.app-container').style.display = 'block';
+        // Hide tab bar and FAB until fully loaded
+        document.querySelector('.tab-bar').style.display = 'flex'; 
+        document.querySelector('.fab-container').style.display = 'block';
     } else {
         window.location.href = 'login.html';
     }
