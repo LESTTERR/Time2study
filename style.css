@@ -54,9 +54,40 @@ body {
   display: none;
 }
 
+/* Floating box styles */
+.floating-box {
+  width: 100%;
+  margin: 0;
+  padding: 15px; /* Inner padding */
+  background: #fff; /* Example background */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Optional shadow */
+  
+  /* Choose ONE of these positioning methods */
+}
+
+/* OPTION 1: For elements inside content-section */
+.content-section .floating-box {
+  margin-left: -20px;
+  margin-right: -20px;
+  width: calc(100% + 40px);
+}
+
+/* OPTION 2: For direct children of app-container */
+.app-container > .floating-box {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
 .content-section.active {
   display: block;
   animation: fadeIn 0.3s ease;
+}
+
+/* Add if using fadeIn animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeIn {
@@ -71,8 +102,8 @@ body {
   background: var(--card-bg);
   border-radius: 24px;
   padding: 1.5rem;
+  margin-top: 30px;
   margin-bottom: 1.5rem;
-  margin-top: 50px;
   box-shadow: var(--shadow);
   border: var(--border);
   display: flex;
@@ -203,7 +234,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 78px;
   background: rgba(255,255,255,0.95);
   display: flex;
   justify-content: space-around;
@@ -285,9 +316,8 @@ body {
 .info-row {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--card-bg);
   padding: 0.75rem 1rem;
-  border: none;
   border-radius: 12px;
   box-shadow: var(--shadow);
 }
@@ -465,7 +495,7 @@ text-align: center;
 
 .task-info h4 {
   margin-bottom: 0.25rem;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
  font-weight: 700;
   color: var(--text);
 }
@@ -688,7 +718,7 @@ text-align: center;
 
 .class-title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
@@ -711,7 +741,7 @@ text-align: center;
 
 .class-actions {
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
 }
 
 .class-actions .delete-btn {
@@ -764,15 +794,6 @@ text-align: center;
 
 
 
-
-
-
-
-
-
-
-
-
 .class-actions .delete-btn:hover {
   background: #e74c3c;
 }
@@ -791,6 +812,8 @@ text-align: center;
   border-radius: 50%;
   padding: 5px;
 }
+
+
 
 .swipe-container {
   position: relative;
@@ -813,7 +836,7 @@ text-align: center;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 10px;
+  padding-top: 40px;
   box-sizing: border-box;
   width: 100%; 
 }
@@ -846,12 +869,14 @@ text-align: center;
 
 
 
-/* Dashboard Card - Matching Calendar Style */
+
+
 .dashboard-card {
   background: var(--card-bg);
   border-radius: 24px;
   padding: 1.5rem;
-  margin: 1.5rem 0;
+ margin-top: 30px;
+  
   box-shadow: var(--shadow);
   border: var(--border);
   display: flex;
@@ -869,7 +894,7 @@ text-align: center;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--text-color);
 }
 
@@ -890,7 +915,7 @@ text-align: center;
 @media (max-width: 768px) {
   .dashboard-card {
     padding: 1rem;
-    margin: 15px 8px;
+    margin: 0.5rem 0;
     border-radius: 20px;
   }
   
@@ -907,9 +932,6 @@ text-align: center;
   }
   
   .chart-container {
-    height: 230px;
+    height: 250px;
     width: 103%;
   }
-
-
-
