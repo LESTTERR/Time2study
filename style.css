@@ -890,7 +890,7 @@ text-align: center;
 @media (max-width: 768px) {
   .dashboard-card {
     padding: 1rem;
-    margin: 10px 5px;
+    margin: 15px 8px;
     border-radius: 20px;
   }
   
@@ -907,7 +907,7 @@ text-align: center;
   }
   
   .chart-container {
-    height: 250px;
+    height: 230px;
     width: 103%;
   }
 
