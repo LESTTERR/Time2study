@@ -54,21 +54,43 @@
   
   <div class="app-container" style="display: none;"> 
     <div class="content-section active" id="homeSection">
-     
- <div class="calendar-card">
-        <div class="calendar-header">
-          <h2 id="monthYear"></h2>
-          <span class="material-icons expand-icon" id="toggleCalendar">expand_more</span>
-        </div>
-        <div class="calendar-grid" id="calendarGrid">
-          <div class="weekdays">
-            <span>Sun</span><span>Mon</span><span>Tue</span>
-            <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+
+<div class="page-indicator">
+      <div class="dot active" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+    </div>
+      
+     <div class="swipe-wrapper" id="swipeWrapper">
+       
+ <div class="swipe-page">
+        <div class="calendar-card">
+          <div class="calendar-header">
+            <h2 id="monthYear"></h2>
+            <span class="material-icons expand-icon" id="toggleCalendar">expand_more</span>
           </div>
-          <div class="dates-grid" id="datesGrid"></div>
+          <div class="calendar-grid" id="calendarGrid">
+            <div class="weekdays">
+              <span>Sun</span><span>Mon</span><span>Tue</span>
+              <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="dates-grid" id="datesGrid"></div>
+          </div>
         </div>
       </div>
 
+     <!-- Page 2 -->
+<div class="swipe-page dashboard-page">
+  <div class="dashboard-card">
+    <h3>Class & Task Statistics</h3>
+    <div class="chart-container">
+      <canvas id="myBarChart"></canvas>
+    </div>
+  </div>
+</div>
+
+</div></div>
+
+       
       <div class="schedule-card">
         <div class="card-header">
           <h3><span class="material-icons">schedule</span>Schedule</h3>
@@ -105,16 +127,14 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { 
-        getFirestore, 
-        collection, 
-        getDocs, 
-        query, 
-        orderBy, 
-        where 
+    import {  getFirestore, collection, getDocs, query, orderBy, where 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+   
+    import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm';
+    Chart.register(LinearScale, CategoryScale, BarController, BarElement);
+  
     const firebaseConfig = {
         apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
         authDomain: "time2study-4f2f3.firebaseapp.com",
@@ -134,6 +154,7 @@
     if (user) {
         await initializeCalendar(user);
         await loadPendingTasks(user);
+        await loadStatistics(user);
         document.getElementById('loadingScreen').style.display = 'none';
         document.querySelector('.app-container').style.display = 'block';
     } else {
@@ -148,13 +169,12 @@
         const toggleCalendar = document.getElementById('toggleCalendar');
         const now = new Date();
 
-        // Calendar initialization code (same as before)
+        
         monthYear.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
         const firstDow = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
         
-        // Clear existing dates
+       
         datesGrid.innerHTML = '';
-        
         for (let i = 0; i < firstDow; i++) {
             const b = document.createElement('span');
             b.className = 'blank';
@@ -305,9 +325,85 @@
             fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
         });
     }
+
+  // Statistics Chart
+ async function loadStatistics(user) {
+    const classesRef = collection(db, 'classes');
+    const tasksRef = collection(db, 'tasks');
+
+    // Fetch data
+    const classSnapshot = await getDocs(query(classesRef, where("userId", "==", user.uid)));
+    const taskSnapshot = await getDocs(query(tasksRef, where("userId", "==", user.uid)));
+    
+    // Process data
+    const totalClasses = classSnapshot.size;
+    const totalTasks = taskSnapshot.size;
+    let completedTasks = 0;
+    let pendingTasks = 0;
+
+    taskSnapshot.forEach(doc => {
+        const task = doc.data();
+        task.completed ? completedTasks++ : pendingTasks++;
+    });
+
+    // Get chart context
+    const ctx = document.getElementById('myBarChart').getContext('2d');
+    
+    // Destroy previous chart instance if exists
+    if (window.myChart) window.myChart.destroy();
+
+    // Create new chart with proper configuration
+    window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Classes', 'Total Tasks', 'Completed', 'Pending'],
+            datasets: [{
+                label: 'Study Statistics',
+                data: [totalClasses, totalTasks, completedTasks, pendingTasks],
+                backgroundColor: [
+                    'rgba(78, 115, 223, 0.8)',
+                    'rgba(54, 185, 204, 0.8)',
+                    'rgba(28, 200, 138, 0.8)',
+                    'rgba(246, 194, 62, 0.8)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Study Statistics',
+                    padding: 20
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    },
+                    grid: {
+                        display: true
+                    }
+                },
+                x: {
+                    type: 'category',
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
 </script>
-
-
-
 </body>
 </html>
