@@ -846,16 +846,39 @@ text-align: center;
 
 
 
-
-
+/* Dashboard Card - Matching Calendar Style */
 .dashboard-card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow);
+  border: var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  max-height: 500px; /* Match calendar height */
+  width: 100%; /* Match calendar width */
+}
+
+.dashboard-card h3 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+/* Chart Container */
+.chart-container {
+  width: 110%; /* Match calendar grid width */
+  height: 400px; /* Match calendar dates grid height */
+  padding: 0.5rem;
   position: relative;
-  height: 400px; /* Fixed height for the card */
-  padding: 20px;
-  background: white;
-  margin-top: 18px;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 #myBarChart {
@@ -863,12 +886,30 @@ text-align: center;
   height: 100% !important;
 }
 
-.dashboard-page {
-  padding: 15px;
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-card {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 20px;
+  }
+  
+  .chart-container {
+    height: 350px;
+    width: 105%;
+  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .dashboard-card {
-    height: 200px;
+    border-radius: 16px;
+    max-height: 450px;
   }
+  
+  .chart-container {
+    height: 250px;
+    width: 103%;
+  }
+
+
 
