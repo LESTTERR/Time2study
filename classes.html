@@ -48,17 +48,19 @@
       <a href="profile.html" class="tab-item"><span class="material-icons">person</span><span class="tab-label">Profile</span></a>
     </nav>
   </div>
-<script type="module" src="firebase‑init.js"></script>
+<script type="module" src="firebase-init.js"></script>
 <script type="module">
   import { db, auth } from "./firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  getDocs
+// Update imports to include onSnapshot
+import { 
+  collection, 
+  deleteDoc, 
+  doc, 
+  query, 
+  where, 
+  getDocs,
+  onSnapshot  // Add this
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const classesList = document.getElementById("classesList");
@@ -149,16 +151,24 @@ import {
           collection(db, "classes"),
           where("userId", "==", user.uid)
         );
-       onSnapshot(q, (snap) => {
-  const classes = snap.docs.map(docSnap => ({
-    ...docSnap.data(),
-    id: docSnap.id
-  }));
-  displayClasses(classes);
-  localStorage.setItem("classes", JSON.stringify(classes));
-         // update cache
-});
-
+   
+onSnapshot(q, 
+  (snap) => {
+    const classes = snap.docs.map(docSnap => ({
+      ...docSnap.data(),
+      id: docSnap.id
+    }));
+    displayClasses(classes);
+    localStorage.setItem("classes", JSON.stringify(classes));
+  },
+  (error) => {  // Add error handler
+    console.error("Real-time listener error:", error);
+    classesList.innerHTML = `
+      <p style="color: red; text-align: center; padding: 20px;">
+        Connection error: ${error.message}
+      </p>`;
+  }
+);
   
 
       } catch (error) {
