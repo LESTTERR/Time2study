@@ -249,7 +249,28 @@
     }
   });
 </script>
-<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script><script>
+  window.addEventListener('dfMessengerLoaded', function () {
+    const dfMessenger = document.querySelector('df-messenger');
+    const shadowRoot = dfMessenger.shadowRoot;
+
+    if (shadowRoot) {
+      const style = document.createElement('style');
+      style.textContent = `
+        df-messenger-chat {
+          bottom: 100px !important; /* pushes chat above tab bar */
+          max-height: 60vh !important;
+        }
+
+        df-messenger-icon {
+          bottom: 100px !important; /* moves icon too */
+        }
+      `;
+      shadowRoot.appendChild(style);
+    }
+  });
+</script>
+
 <df-messenger
   intent="WELCOME"
   chat-title="T2SBOT"
@@ -257,21 +278,7 @@
   language-code="en"
   minimized="true"
 ></df-messenger>
-<script>
-  window.addEventListener('dfMessengerLoaded', function () {
-    const dfMessenger = document.querySelector('df-messenger');
-    const shadowRoot = dfMessenger.shadowRoot;
-    
-    const style = document.createElement('style');
-    style.textContent = `
-      df-messenger-chat {
-        bottom: 80px !important;
-        max-height: 60vh !important;
-      }
-    `;
-    shadowRoot.appendChild(style);
-  });
-</script>
+
 
 </body>
 </html>
