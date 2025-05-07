@@ -77,13 +77,18 @@
     .logout-btn { background: #e74c3c; color: white; }
 
 
+@media (max-width: 600px) {
   df-messenger {
-    --df-messenger-button-titlebar-color: #1E3C72;
-    --df-messenger-chat-background-color: #ffffff;
-    --df-messenger-font-color: black;
-    --df-messenger-user-message: #1E3C72;
-    --df-messenger-bot-message: #e0e0e0;
+    --df-messenger-min-width: 100vw;
+    --df-messenger-min-height: 40vh;
+    --df-messenger-chat-background-color: #fff;
   }
+
+  df-messenger::part(chat) {
+    max-height: 60vh;
+    bottom: 60px !important;
+  }
+}
 
 
     
@@ -250,7 +255,7 @@
   chat-title="T2SBOT"
   agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
   language-code="en"
-  style="position: fixed; bottom: 90px; right: 16px; z-index: 1000;"
+  style="position: fixed; bottom: 60px; right: 16px; z-index: 1000; max-height: 80vh; max-width: 90vw;"
 ></df-messenger>
 </body>
 </html>
