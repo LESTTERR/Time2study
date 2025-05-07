@@ -203,45 +203,44 @@
       return;
     }
 
-    try {
+  try {
   console.log('Attempting login with:', email);
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   console.log('Login success:', userCredential.user.uid);
 
   // Set flag so loader only shows once
   sessionStorage.setItem('loggedIn', 'true');
-  
+
   window.location.href = 'home.html';
+
+} catch (error) {
+  console.error('Login error:', error);
+  let message = 'Login failed: ';
+  
+  switch(error.code) {
+    case 'auth/invalid-email':
+      message += 'Invalid email address';
+      break;
+    case 'auth/user-disabled':
+      message += 'Account disabled';
+      break;
+    case 'auth/user-not-found':
+      message += 'No account found';
+      break;
+    case 'auth/wrong-password':
+      message += 'Incorrect password';
+      break;
+    case 'auth/too-many-requests':
+      message += 'Too many attempts. Try again later';
+      break;
+    default:
+      message += error.message;
+  }
+
+  alert(message);
+  document.getElementById('password').value = ''; // Clear password field
 }
 
-
-    } catch (error) {
-      console.error('Login error:', error);
-      let message = 'Login failed: ';
-      
-      switch(error.code) {
-        case 'auth/invalid-email':
-          message += 'Invalid email address';
-          break;
-        case 'auth/user-disabled':
-          message += 'Account disabled';
-          break;
-        case 'auth/user-not-found':
-          message += 'No account found';
-          break;
-        case 'auth/wrong-password':
-          message += 'Incorrect password';
-          break;
-        case 'auth/too-many-requests':
-          message += 'Too many attempts. Try again later';
-          break;
-        default:
-          message += error.message;
-      }
-      
-      alert(message);
-      document.getElementById('password').value = ''; // Clear password field
-    }
   });
 </script>
 
