@@ -212,7 +212,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/fi
 
             snapshot.forEach(doc => {
                 const t = doc.data();
-                const due = new Date(t.dueDate);
+                const due = t.dueDate.toDate();
                 if (due >= now) {
                     const ti = document.createElement('div');
                     ti.className = 'task-item';
@@ -262,48 +262,58 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/fi
         return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
     }
 
-    async function showFor(dayNum, user) {
-        const scheduleList = document.getElementById('scheduleList');
-        clearSchedule();
-        const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
-        const wd = sel.toLocaleString('en-US', { weekday: 'short' });
-        
-        const q = query(
-            collection(db, 'classes'),
-            where("userId", "==", user.uid)
-        );
-        
-       onSnapshot(q, (snapshot) => {
-    let found = false;
-    snapshot.forEach(doc => {
-        const c = doc.data();
-        const classDays = c.days.split(/,\s*/).map(d => d.substring(0, 3));
-        if (classDays.includes(wd)) {
-            found = true;
-            const [startTime, endTime] = c.time.split(' - ');
-            const [startHours, startMinutes] = startTime.split(':');
-            const [endHours, endMinutes] = endTime.split(':');
+  async function showFor(dayNum, user) {
+    const scheduleList = document.getElementById('scheduleList');
+    clearSchedule();
+    const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
+    const wd = sel.toLocaleString('en-US', { weekday: 'short' });
+    
+    const q = query(
+        collection(db, 'classes'),
+        where("userId", "==", user.uid),
+        orderBy('time')  // Added missing comma after where clause
+    );
 
-            const timeRange = `${to12HourFormat(parseInt(startHours), parseInt(startMinutes))} – ${to12HourFormat(parseInt(endHours), parseInt(endMinutes))}`;
+    // Proper onSnapshot structure
+    onSnapshot(q, 
+        (snapshot) => {  // Success callback
+            let found = false;
+            scheduleList.innerHTML = '';  // Clear previous items
 
-            const it = document.createElement('div');
-            it.className = 'schedule-item';
-            it.innerHTML = `
-                <div class="time">${timeRange}</div>
-                <div class="details">
-                    <h4>${c.name || 'Unnamed Class'}</h4>
-                    <p>${c.instructor || ''}</p>
-                </div>
-            `;
-            scheduleList.appendChild(it);
+            snapshot.forEach(doc => {
+                const c = doc.data();
+                const classDays = c.days.split(/,\s*/).map(d => d.substring(0, 3));
+                if (classDays.includes(wd)) {
+                    found = true;
+                    const [startTime, endTime] = c.time.split(' - ');
+                    const [startHours, startMinutes] = startTime.split(':');
+                    const [endHours, endMinutes] = endTime.split(':');
+
+                    const timeRange = `${to12HourFormat(parseInt(startHours), parseInt(startMinutes))} – ${to12HourFormat(parseInt(endHours), parseInt(endMinutes))}`;
+
+                    const it = document.createElement('div');
+                    it.className = 'schedule-item';
+                    it.innerHTML = `
+                        <div class="time">${timeRange}</div>
+                        <div class="details">
+                            <h4>${c.name || 'Unnamed Class'}</h4>
+                            <p>${c.instructor || ''}</p>
+                        </div>
+                    `;
+                    scheduleList.appendChild(it);
+                }
+            });
+
+            if (!found) {
+                scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
+            }
+        },
+        (error) => {  // Error callback
+            console.error("Error getting classes:", error);
+            scheduleList.innerHTML = "<p style='text-align:center;color:red;'>Error loading schedule</p>";
         }
-    });
-
-    if (!found) {
-        scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
-    }
-});
-
+    );
+}
 
     function clearSchedule() {
         const scheduleList = document.getElementById('scheduleList');
