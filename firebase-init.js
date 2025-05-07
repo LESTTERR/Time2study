@@ -1,12 +1,10 @@
-// firebase-init.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import {
-  getFirestore,
-  enableIndexedDbPersistence
+import { 
+  initializeFirestore, 
+  persistentLocalCache 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-// 1️⃣ Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
   authDomain: "time2study-4f2f3.firebaseapp.com",
@@ -17,12 +15,12 @@ const firebaseConfig = {
   measurementId: "G-9S9C5D6TXF"
 };
 
-// 2️⃣ Initialize Firebase
-const app  = initializeApp(firebaseConfig);
-export const db   = getFirestore(app);
-export const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
 
-// 3️⃣ Enable offline persistence (IndexedDB cache)
-enableIndexedDbPersistence(db).catch(err => {
-  console.warn("Firestore persistence error:", err.code);
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    cacheSizeBytes: 10 * 1024 * 1024 // 10MB cache
+  })
 });
+
+export const auth = getAuth(app);
