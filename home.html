@@ -416,5 +416,22 @@
     });
 }
 </script>
+
+    <script>
+  if (sessionStorage.getItem('loggedIn') === 'true') {
+    // First time after login — show loader for 2s
+    setTimeout(() => {
+      document.querySelector('.loader').style.display = 'none';
+      document.querySelector('.tab-bar').style.display = 'flex';
+      
+      // Prevent loader from showing again
+      sessionStorage.setItem('loggedIn', 'done');
+    }, 2000);
+  } else {
+    // Already logged in before — skip loader
+    document.querySelector('.loader').style.display = 'none';
+    document.querySelector('.tab-bar').style.display = 'flex';
+  }
+</script>
 </body>
 </html>
