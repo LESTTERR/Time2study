@@ -255,7 +255,23 @@
   chat-title="T2SBOT"
   agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
   language-code="en"
-  style="position: fixed; bottom: 60px; right: 16px; z-index: 1000; max-height: 80vh; max-width: 90vw;"
+  minimized="true"
 ></df-messenger>
+<script>
+  window.addEventListener('dfMessengerLoaded', function () {
+    const dfMessenger = document.querySelector('df-messenger');
+    const shadowRoot = dfMessenger.shadowRoot;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      df-messenger-chat {
+        bottom: 80px !important;
+        max-height: 60vh !important;
+      }
+    `;
+    shadowRoot.appendChild(style);
+  });
+</script>
+
 </body>
 </html>
