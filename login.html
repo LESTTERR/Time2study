@@ -81,13 +81,13 @@
 
     input:focus {
       outline: none;
-      border-color: var(--dark-blue);
+      border-color: #152852;
       box-shadow: 0 0 0 2px rgba(30, 60, 114, 0.2);
     }
 
     button {
       padding: 0.8rem;
-      background: var(--dark-blue);
+      background: #152852;
       color: white;
       border: none;
       border-radius: 6px;
@@ -111,7 +111,7 @@
     }
 
     a {
-      color: var(--dark-blue);
+      color: #152852;
       text-decoration: none;
       font-weight: 600;
       transition: opacity 0.3s ease;
@@ -204,13 +204,16 @@
     }
 
     try {
-      console.log('Attempting login with:', email);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Login success:', userCredential.user.uid);
-      
-      // Show success message before redirect
-      
-      window.location.href = 'home.html';
+  console.log('Attempting login with:', email);
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  console.log('Login success:', userCredential.user.uid);
+
+  // Set flag so loader only shows once
+  sessionStorage.setItem('loggedIn', 'true');
+  
+  window.location.href = 'home.html';
+}
+
 
     } catch (error) {
       console.error('Login error:', error);
