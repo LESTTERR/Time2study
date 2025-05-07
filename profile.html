@@ -216,6 +216,12 @@
     }
   });
 
+  function logout() {
+  sessionStorage.clear(); // or sessionStorage.removeItem('loggedIn');
+  window.location.href = 'login.html';
+}
+
+
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
       await signOut(auth);
