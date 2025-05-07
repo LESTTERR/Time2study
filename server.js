@@ -1,8 +1,8 @@
-const express = require("express"); 
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const { SessionsClient } = require("@google-cloud/dialogflow");
-const uuid = require("uuid");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import { SessionsClient } from "@google-cloud/dialogflow";
+import { v4 as uuidv4 } from "uuid";
 
 // ✅ Use the correct path to your downloaded JSON
 const keyFile = "./dialogflow-key.json";
@@ -17,7 +17,7 @@ const client = new SessionsClient({ keyFilename: keyFile });
 const projectId = "time2study-4f2f3";
 
 app.post("/chat", async (req, res) => {
-  const sessionId = uuid.v4();
+  const sessionId = uuidv4();
   const sessionPath = client.projectAgentSessionPath(projectId, sessionId);
 
   const request = {
@@ -40,4 +40,5 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("✅ Server running at http://localhost:3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
