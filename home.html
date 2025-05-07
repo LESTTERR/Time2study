@@ -195,7 +195,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/fi
         highlightToday();
     }
 
- async function loadPendingTasks(user) {
+async function loadPendingTasks(user) {
     const pending = document.getElementById('pendingTasks');
     const q = query(
         collection(db, 'tasks'),
@@ -212,21 +212,30 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/fi
 
             snapshot.forEach(doc => {
                 const t = doc.data();
-                const due = t.dueDate.toDate();
-                if (due >= now) {
-                    const ti = document.createElement('div');
-                    ti.className = 'task-item';
-                    ti.innerHTML = `
-                        <div class="task-info">
-                            <h4>${t.name}</h4>
-                            <p>${t.description}</p>
-                            <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
-                        </div>
-                    `;
-                    pending.appendChild(ti);
+                // Add error handling for dueDate conversion
+                try {
+                    const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+                    
+                    if (due >= now) {
+                        const ti = document.createElement('div');
+                        ti.className = 'task-item';
+                        ti.innerHTML = `
+                            <div class="task-info">
+                                <h4>${t.name}</h4>
+                                <p>${t.description}</p>
+                                <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
+                            </div>
+                        `;
+                        pending.appendChild(ti);
+                    }
+                } catch (error) {
+                    console.error('Error processing task:', error);
                 }
             });
         }
+    }, (error) => {
+        console.error("Error getting tasks:", error);
+        pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
     });
 }
 
