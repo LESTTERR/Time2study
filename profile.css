@@ -155,15 +155,17 @@ body {
   .logout-btn { background: #e74c3c; color: white; }
 
 
-@media (max-width: 600px) {
-df-messenger {
-  --df-messenger-min-width: 100vw;
-  --df-messenger-min-height: 40vh;
-  --df-messenger-chat-background-color: #fff;
-}
-
-df-messenger::part(chat) {
-  max-height: 60vh;
-  bottom: 60px !important;
-}
-}
+/* Place chatbot above the tab bar and fix its position */
+#chatbot {
+    position: fixed;
+    right: 24px;
+    bottom: 80px; /* Adjust this value so it's above your tab bar */
+    z-index: 1000;
+  }
+  
+  /* Optional: Style the Dialogflow Messenger widget */
+  df-messenger {
+    --df-messenger-bot-message: #e3f2fd;
+    --df-messenger-user-message: #c8e6c9;
+    --df-messenger-button-titlebar-color: #4285f4;
+  }
