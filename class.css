@@ -229,24 +229,20 @@
       .class-actions .material-icons {
         font-size: 18px;
       }
+      
       .class-item,
-.task-item {
-  /* gradient background similar to your schedule‐card */
-  background: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(245, 245, 245, 0.9)
-  );
-  border-left: 4px solid var(--primary);
-  border-radius: 20px;
-  padding: 1rem;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: var(--border);
-  transition: transform 0.3s ease, background 0.3s ease;
-}
+      .task-item {
+        background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(245,245,245,0.9));
+        border: var(--border); /* First set all borders */
+        border-left: 4px solid var(--primary); /* Then override left border */
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        transition: transform 0.3s ease, background 0.3s ease;
+      }
 
 .class-item:hover,
 .task-item:hover {

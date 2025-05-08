@@ -12,6 +12,52 @@
 
 </head>
 
+<style>
+  #draggable-chatbot {
+    position: fixed;
+    bottom: 120px;
+    right: 24px;
+    z-index: 9999;
+    cursor: move;
+    width: 370px;
+    max-width: 90vw;
+    background: none;
+  }
+  #draggable-chatbot .drag-header {
+    width: 100%;
+    height: 28px;
+    background: #4285f4;
+    color: #fff;
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 8px 8px 0 0;
+    user-select: none;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #draggable-chatbot .drag-header span {
+    flex: 1;
+  }
+  #draggable-chatbot .drag-header button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  #draggable-chatbot[hidden] {
+    display: none;
+  }
+  /* Remove default shadow from df-messenger */
+  #draggable-chatbot df-messenger {
+    box-shadow: none !important;
+    border-radius: 0 0 8px 8px;
+  }
+</style>
+
 <body>
   <div class="app-container">
     <div class="content-section active" id="profileSection">
@@ -166,36 +212,67 @@
     }
   });
 </script>
+<!-- Draggable Chatbot Container -->
+
+<div id="draggable-chatbot">
+  <div class="drag-header">
+    <span>T2SBOT</span>
+    <button id="close-chatbot" title="Close">&times;</button>
+  </div>
+  <df-messenger
+    intent="WELCOME"
+    chat-title="T2SBOT"
+    agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
+    language-code="en"
+  ></df-messenger>
+</div>
+<button id="open-chatbot" style="position:fixed;bottom:120px;right:24px;z-index:9998;background:#4285f4;color:#fff;border:none;border-radius:50%;width:56px;height:56px;font-size:32px;display:none;cursor:pointer;">
+  <span class="material-icons">chat</span>
+</button>
 <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-  <script>
-  window.addEventListener('dfMessengerLoaded', function () {
-    const dfMessenger = document.querySelector('df-messenger');
-    const shadowRoot = dfMessenger.shadowRoot;
+<script>
+  // Drag functionality
+  const chatbot = document.getElementById('draggable-chatbot');
+  const dragHeader = chatbot.querySelector('.drag-header');
+  let offsetX = 0, offsetY = 0, isDragging = false;
 
-    if (shadowRoot) {
-      const style = document.createElement('style');
-      style.textContent = `
-        df-messenger-chat {
-          bottom: 100px !important; /* pushes chat above tab bar */
-          max-height: 60vh !important;
-        }
-
-        df-messenger-icon {
-          bottom: 100px !important; /* moves icon too */
-        }
-      `;
-      shadowRoot.appendChild(style);
-    }
+  dragHeader.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    offsetX = e.clientX - chatbot.getBoundingClientRect().left;
+    offsetY = e.clientY - chatbot.getBoundingClientRect().top;
+    document.body.style.userSelect = 'none';
   });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    let x = e.clientX - offsetX;
+    let y = e.clientY - offsetY;
+    // Keep inside viewport
+    x = Math.max(0, Math.min(window.innerWidth - chatbot.offsetWidth, x));
+    y = Math.max(0, Math.min(window.innerHeight - chatbot.offsetHeight, y));
+    chatbot.style.left = x + 'px';
+    chatbot.style.top = y + 'px';
+    chatbot.style.right = 'auto';
+    chatbot.style.bottom = 'auto';
+  });
+
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+    document.body.style.userSelect = '';
+  });
+
+  // Show/hide logic
+  const closeBtn = document.getElementById('close-chatbot');
+  const openBtn = document.getElementById('open-chatbot');
+  closeBtn.onclick = () => {
+    chatbot.hidden = true;
+    openBtn.style.display = 'block';
+  };
+  openBtn.onclick = () => {
+    chatbot.hidden = false;
+    openBtn.style.display = 'none';
+  };
 </script>
-
-<df-messenger
-  intent="WELCOME"
-  chat-title="T2SBOT"
-  agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
-  language-code="en"
-></df-messenger>
-
 
 </body>
 </html>
