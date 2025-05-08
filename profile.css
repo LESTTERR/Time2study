@@ -1,171 +1,178 @@
+/* --- Profile Card --- */
+.profile-card {
+  background: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(30, 60, 114, 0.08);
+  max-width: 400px;
+  margin: 2rem auto 0 auto;
+  transition: box-shadow 0.2s;
+}
+
 .profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  
-  .profile-header .profile-pic .material-icons {
-    font-size: 120px;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-  }
-  
-  .profile-header h2 {
-    font-size: 1.8rem;
-    margin-top: 0.5rem;
-    color: var(--text);
-  }
-  
-  .profile-header p {
-    font-size: 1rem;
-    color: #555;
-  }
-  
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1.5rem;
-  }
-  
-  .info-row {
-    display: flex;
-    align-items: center;
-    background: var(--card-bg);
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-  }
-  
-  .info-row span.material-icons {
-    margin-right: 10px;
-    color: var(--primary);
-  }
-  
-  .info-row input {
-    border: none;
-    background: transparent;
-    font-size: 1rem;
-    color: var(--text);
-    width: 100%;
-  }
-  
-  .info-row input:disabled {
-    color: #555;
-  }
-  
-  .profile-buttons {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    justify-content: center;
-  }
-  
-  .edit-btn, .save-btn, .logout-btn {
-    padding: 0.7rem 1.5rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    background: var(--primary);
-    color: white;
-    transition: background 0.3s ease;
-  }
-  
-  .save-btn {
-    background: var(--secondary);
-  }
-  
-  .logout-btn {
-    background: var(--accent);
-  }
-  
-  .edit-btn:hover, .save-btn:hover, .logout-btn:hover {
-    opacity: 0.9;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
 
+.profile-pic .material-icons {
+  font-size: 100px;
+  color: #4285f4;
+  margin-bottom: 0.5rem;
+}
 
+.profile-header h2 {
+  font-size: 2rem;
+  margin: 0.5rem 0 0 0;
+  color: #222;
+  font-weight: 700;
+}
 
+.profile-header p {
+  font-size: 1rem;
+  color: #666;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(66, 133, 244, 0.06);
+}
+
+.info-row span.material-icons {
+  margin-right: 12px;
+  color: #4285f4;
+  font-size: 1.4rem;
+}
+
+.info-row input {
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  color: #222;
+  width: 100%;
+  outline: none;
+}
+
+.info-row input:disabled {
+  color: #888;
+  background: transparent;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.edit-btn, .save-btn, .logout-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  background: #4285f4;
+  color: white;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.edit-btn:hover { background: #3367d6; }
+.save-btn { background: #2ecc71; }
+.save-btn:hover { background: #27ae60; }
+.logout-btn { background: #e74c3c; }
+.logout-btn:hover { background: #c0392b; }
+
+/* --- General Body --- */
 body {
-      
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-  }
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f0f4f8;
+}
 
-  .profile-card {
-    background: transparent;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
-    max-width: none;
-    margin: 0;
-  }
+/* --- Tab Bar --- */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  box-shadow: 0 -2px 12px rgba(30, 60, 114, 0.08);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+  z-index: 900;
+}
 
-  .profile-header {
-    text-align: center;
-    margin: 1rem 0;
-  }
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #888;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
 
-  .profile-pic .material-icons {
-    font-size: 80px;
-    color: #fafcff !important;
-  }
+.tab-item.active,
+.tab-item:hover {
+  color: #4285f4;
+}
 
-  .profile-info {
-    padding: 0 1rem;
-  }
+.tab-item .material-icons {
+  font-size: 1.7rem;
+  margin-bottom: 0.1rem;
+}
 
-  .info-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .info-row input {
-    flex: 1;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: white;
-    color: #333;
-  }
-
-  .profile-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0 1rem;
-  }
-
-  button {
-    padding: 0.5rem 1.2rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-
-  .edit-btn { background: #1E3C72; color: white; }
-  .save-btn { background: #2ecc71; color: white; }
-  .logout-btn { background: #e74c3c; color: white; }
-
-
-/* Place chatbot above the tab bar and fix its position */
+/* --- Chatbot --- */
 #chatbot {
-    position: fixed;
-    right: 24px;
-    bottom: 80px; /* Adjust this value so it's above your tab bar */
-    z-index: 1000;
+  position: fixed;
+  right: 24px;
+  bottom: 90px; /* Above tab bar */
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.18);
+  border-radius: 18px;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Dialogflow Messenger Customization */
+df-messenger {
+  --df-messenger-bot-message: #e3f2fd;
+  --df-messenger-user-message: #c8e6c9;
+  --df-messenger-button-titlebar-color: #4285f4;
+  --df-messenger-chat-background-color: #fff;
+  --df-messenger-font-color: #222;
+  --df-messenger-input-box-color: #f5f7fa;
+  --df-messenger-input-font-color: #222;
+  --df-messenger-send-icon: #4285f4;
+}
+
+/* Responsive: Stack profile card and chatbot on small screens */
+@media (max-width: 600px) {
+  .profile-card {
+    max-width: 98vw;
+    padding: 1rem 0.5rem;
   }
-  
-  /* Optional: Style the Dialogflow Messenger widget */
-  df-messenger {
-    --df-messenger-bot-message: #e3f2fd;
-    --df-messenger-user-message: #c8e6c9;
-    --df-messenger-button-titlebar-color: #4285f4;
+  #chatbot {
+    right: 8px;
+    bottom: 70px;
+    width: 95vw;
+    max-width: 360px;
   }
+}
