@@ -1,0 +1,236 @@
+:root {
+    --primary: #38c0ff;
+    --secondary: #6c5ce7;
+    --accent: #ff7675;
+    --background: #f8f9ff;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text: #2d3436;
+    --glass: rgba(255, 255, 255, 0.15);
+    --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    --border: 1px solid rgba(255, 255, 255, 0.18);
+    --sky-blue: #79c2ff;
+    --dark-blue: rgb(228 246 255);
+  }
+  
+
+/* ========== Task Card ========== */
+.full-task-card .card-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: var(--border);
+    margin-bottom: 1rem;
+  }
+  .card-header h3 {
+    font-weight: 700 !important;     /* Extra bold */
+    font-size: 1.55rem !important;  /* 28px equivalent */
+  
+  }
+  
+  .card-header .material-icons {
+    font-size: 1.7rem !important;
+    color: #4a5568; /* Matching dark gray */
+  }
+  
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .task-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    border: var(--border);
+    transition: transform 0.3s ease;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .task-card h3 {
+    font-size: 1.20rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .task-list .task-item {
+    background: #fff; /* solid white background */
+    border-left: 4px solid var(--accent);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    transition: background 0.2s ease;
+  }
+  
+  .task-item:hover {
+    background: #fff; /* remain white on hover */
+    transform: none;
+  }
+  
+  .task-info h4 {
+    margin-bottom: 0.25rem;
+    font-size: 1.5rem;
+   font-weight: 700;
+    color: var(--text);
+  }
+  
+  .task-info p {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  .deadline {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  
+  .task-item {
+    position: relative;
+    padding-right: 40px !important;
+  }
+  
+  
+  
+  .done-btn {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .delete-btn {
+    background: var(--accent);
+    color: white;
+  }
+  
+  
+  .delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.1); /* Add slight scaling effect */
+  }
+  
+  .task-item.done {
+    opacity: 0.6;
+    background: #f5f5f5; /* light grey for done state */
+    border-left-color: #888;
+  }
+  
+  
+  .task-item.done .task-info h4,
+  .task-item.done .task-info p,
+  .task-item.done .task-info .deadline {
+    text-decoration: line-through;
+  }
+  
+  .task-item.done .deadline {
+    color: #888;
+  }
+  
+  .task-list .task-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .task-item:hover {
+    transform: translateX(0); /* disable shift */
+  }
+  
+  .done-btn,
+.delete-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.done-btn {
+  background: var(--primary);
+  color: white;
+}
+.delete-btn {
+  background: var(--accent);
+  color: white;
+}
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    margin-top: 0.5rem;
+  }
+  
+  .done-btn,
+  .delete-btn {
+    padding: 0.1rem 0.6rem;
+    font-size: 0.80rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease;
+  }
+  
+  .class-item,
+  .task-item {
+    /* gradient background similar to your schedule‐card */
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(245, 245, 245, 0.9)
+    );
+    border-left: 4px solid var(--primary);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: var(--border);
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  
+  .class-item:hover,
+  .task-item:hover {
+    transform: translateY(-5px);
+    /* keep the gradient on hover, maybe slightly brighter */
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 1),
+      rgba(245, 245, 245, 1)
+    );
+  }
+  
+  
+  
+  .task-actions,
+  .class-item .delete-btn {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .done-btn:hover {
+    opacity: 1;
+    transform: scale(1.1); /* Add slight scaling effect */
+  }
+  
+  
+  
+  .selected-date {
+    background-color: #2196F3;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+  }
+   
