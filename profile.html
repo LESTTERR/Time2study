@@ -47,15 +47,15 @@
     </div></div>
 
 
-    <div class="chat-container">
-      <iframe
-        height="430"
-        width="350"
-        src="https://bot.dialogflow.com/4558beea-12ba-46e0-9f37-0a0c394f92ec"
-        class="chatbot-frame">
-      </iframe>
+    <div class="df-messenger-container-custom">
+      <df-messenger
+        chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
+        intent="WELCOME"
+        chat-title="T2SBOT"
+        agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
+        language-code="en"
+      ></df-messenger>
     </div>
-    
    
 
    <nav class="tab-bar">
@@ -178,6 +178,22 @@
     }
   });
 </script>
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<style>
+  .df-messenger-container-custom {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 90px; /* Adjust to sit just above the tab bar */
+    z-index: 1000;
+  }
+  @media (max-width: 600px) {
+    .df-messenger-container-custom {
+      width: 90vw;
+      min-width: unset;
+    }
+  }
+</style>
 
 
 </body>
