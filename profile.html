@@ -47,15 +47,15 @@
     </div></div>
 
 
-    <div class="df-messenger-container-custom">
-      <df-messenger
-        chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
-        intent="WELCOME"
-        chat-title="T2SBOT"
-        agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
-        language-code="en"
-      ></df-messenger>
-    </div>
+   <div class="df-messenger-container-custom">
+  <df-messenger
+    chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
+    intent="WELCOME"
+    chat-title="T2SBOT"
+    agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
+    language-code="en"
+  ></df-messenger>
+</div>
    
 
    <nav class="tab-bar">
@@ -184,39 +184,13 @@
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 90px; 
+    bottom: 90px; /* Adjust to sit just above the tab bar */
     z-index: 1000;
-    width: 370px;
-    max-width: 95vw;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(30, 60, 114, 0.15);
-    overflow: hidden;
-    background: transparent;
-  }
-  df-messenger {
-    --df-messenger-bot-message: #e3f2fd;
-    --df-messenger-user-message: #c8e6c9;
-    --df-messenger-button-titlebar-color: #4285f4;
-    --df-messenger-chat-background-color: #fff;
-    --df-messenger-font-color: #222;
-    --df-messenger-input-box-color: #f5f7fa;
-    --df-messenger-input-font-color: #222;
-    --df-messenger-send-icon: #4285f4;
-    border-radius: 18px;
-    max-width: 370px;
-    width: 100%;
   }
   @media (max-width: 600px) {
     .df-messenger-container-custom {
-      width: 98vw;
+      width: 90vw;
       min-width: unset;
-      left: 1vw;
-      transform: none;
-      border-radius: 14px;
-    }
-    df-messenger {
-      max-width: 98vw;
-      border-radius: 14px;
     }
   }
 </style>
