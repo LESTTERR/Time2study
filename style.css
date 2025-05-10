@@ -1,4 +1,4 @@
-  /* style.css */
+/* style.css */
 
 :root {
   --primary: #38c0ff;
@@ -36,8 +36,7 @@ body {
 
 .app-container {
   max-width: 500px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 auto;      /* Center horizontally */
   height: auto;
   display: flex;
   flex-direction: column;
@@ -397,3 +396,10 @@ body {
     height: 250px;
     width: 103%;
   }
+
+@media (max-width: 600px) {
+  .app-container {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}

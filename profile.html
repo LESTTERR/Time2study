@@ -167,53 +167,13 @@
     }
   });
 </script>
-
-<style>
-  .df-messenger-container-custom {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 90px; /* Above tab bar */
-    z-index: 1000;
-    width: 370px;
-    max-width: 95vw;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(30, 60, 114, 0.15);
-    overflow: hidden;
-    background: transparent;
-  }
-  df-messenger {
-    max-width: 370px;
-    width: 100%;
-    border-radius: 18px;
-  }
-  @media (max-width: 600px) {
-    .df-messenger-container-custom {
-      width: 90vw;
-      left: 5vw;
-      right: 5vw;
-      bottom: 90px;
-      border-radius: 14px;
-      min-width: unset;
-      max-width: 95vw;
-    }
-    df-messenger {
-      max-width: 100vw;
-      border-radius: 14px;
-    }
-  }
-</style>
-
-  <!-- Place these LAST, just before </body> -->
-  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-  <div class="df-messenger-container-custom">
-    <df-messenger
-      chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
-      intent="WELCOME"
-      chat-title="T2SBOT"
-      agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
-      language-code="en"
-    ></df-messenger>
-  </div>
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger
+  chat-icon="https:&#x2F;&#x2F;github.com&#x2F;LESTTERR&#x2F;Time2study&#x2F;blob&#x2F;main&#x2F;logo.png?raw=true"
+  intent="WELCOME"
+  chat-title="T2SBOT"
+  agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
+  language-code="en"
+></df-messenger>
 </body>
 </html>

@@ -1,5 +1,5 @@
 :root {
-    --primary: #38c0ff;
+    --primary: #6ec9f4;
     --secondary: #6c5ce7;
     --accent: #ff7675;
     --background: #f8f9ff;
@@ -30,6 +30,11 @@
   .card-header .material-icons {
     font-size: 1.7rem !important;
     color: #4a5568; /* Matching dark gray */
+    vertical-align: middle;      /* Ensures vertical alignment */
+    line-height: 1;              /* Prevents extra space */
+    display: inline-flex;        /* Allows for better alignment */
+    align-items: center;         /* Centers icon vertically */
+    margin-right: none;        /* Optional: space between icon and text */
   }
   
   .task-list {
@@ -228,4 +233,3 @@
     border-radius: 50%;
     padding: 5px;
   }
-   
