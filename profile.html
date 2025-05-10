@@ -47,17 +47,6 @@
     </div></div>
 
 
-   <div class="df-messenger-container-custom">
-  <df-messenger
-    chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
-    intent="WELCOME"
-    chat-title="T2SBOT"
-    agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
-    language-code="en"
-  ></df-messenger>
-</div>
-   
-
    <nav class="tab-bar">
   <a href="home.html" class="tab-item">
     <span class="material-icons">calendar_today</span>
@@ -178,7 +167,7 @@
     }
   });
 </script>
-<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
 <style>
   .df-messenger-container-custom {
     position: fixed;
@@ -215,6 +204,16 @@
   }
 </style>
 
-
+  <!-- Place these LAST, just before </body> -->
+  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+  <div class="df-messenger-container-custom">
+    <df-messenger
+      chat-icon="https://github.com/LESTTERR/Time2study/blob/main/logo.png?raw=true"
+      intent="WELCOME"
+      chat-title="T2SBOT"
+      agent-id="4558beea-12ba-46e0-9f37-0a0c394f92ec"
+      language-code="en"
+    ></df-messenger>
+  </div>
 </body>
 </html>
