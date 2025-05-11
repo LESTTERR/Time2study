@@ -438,11 +438,11 @@ if (sessionStorage.getItem('loggedIn') === 'true') {
 }
 
 </script>
-<div id="chatbot-fab" style="position:fixed;bottom:32px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:64px;height:64px;background:#2196F3;border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,0.18);transition:box-shadow 0.2s;">
-  <span class="material-icons" style="color:#fff;font-size:32px;">chat</span>
+<div id="chatbot-fab" style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
+  <span class="material-icons" style="color:#27c2ed;font-size:45px;">smart_toy</span>
 </div>
 <div id="chatbot-window" style="display:none;position:fixed;bottom:104px;right:32px;width:340px;max-width:95vw;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(30,60,114,0.18);overflow:hidden;z-index:10000;flex-direction:column;">
-  <div style="background:#2196F3;color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="background:#2f3dff;color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
     <span style="font-weight:600;font-size:1.1rem;">T2S Chatbot</span>
     <span id="chatbot-close" class="material-icons" style="cursor:pointer;">close</span>
   </div>
@@ -454,6 +454,7 @@ if (sessionStorage.getItem('loggedIn') === 'true') {
     </button>
   </div>
 </div>
+
 
 <script>
 const fab = document.getElementById('chatbot-fab');
@@ -521,7 +522,20 @@ function addMessage(sender, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 </script>
+<script>
+function adjustChatbotForKeyboard(up) {
+  const chatWindow = document.getElementById('chatbot-window');
+  if (up) {
+    chatWindow.classList.add('keyboard-up');
+  } else {
+    chatWindow.classList.remove('keyboard-up');
+  }
+}
 
+// For iOS and Android: listen for focus/blur on the input
+input.addEventListener('focus', () => adjustChatbotForKeyboard(true));
+input.addEventListener('blur', () => adjustChatbotForKeyboard(false));
+</script>
 
 </body>
 </html>
