@@ -253,20 +253,7 @@ function addMessage(sender, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 </script>
-<script>
-function adjustChatbotForKeyboard(up) {
-  const chatWindow = document.getElementById('chatbot-window');
-  if (up) {
-    chatWindow.classList.add('keyboard-up');
-  } else {
-    chatWindow.classList.remove('keyboard-up');
-  }
-}
 
-// For iOS and Android: listen for focus/blur on the input
-input.addEventListener('focus', () => adjustChatbotForKeyboard(true));
-input.addEventListener('blur', () => adjustChatbotForKeyboard(false));
-</script>
 </body>
 </html>
 
