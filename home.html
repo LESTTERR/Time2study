@@ -159,8 +159,6 @@
     import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm';
     Chart.register(LinearScale, CategoryScale, BarController, BarElement);
 
-
-
     // Auth state management
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -433,6 +431,7 @@
       });
     }
 
+    window.auth = auth;
   </script>
 
   <script>
@@ -519,6 +518,7 @@
     }
 
     async function sendMessageToDialogflow(message) {
+      // Use Firebase Auth user ID if available, otherwise use 'guest'
       const sessionId = auth.currentUser ? auth.currentUser.uid : 'guest';
       addMessage('bot', '...');
       try {
