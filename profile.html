@@ -39,9 +39,8 @@
         </div>
 
         <div class="profile-buttons">
-          <button class="edit-btn" id="editBtn">Edit</button>
-          <button class="save-btn" id="saveBtn" style="display: none;">Save</button>
-          <button class="logout-btn" id="logoutBtn">Log Out</button>
+       <button class="logout-btn" id="logoutBtn">Log Out</button>
+          <button class="delete-btn" id="deleteBtn">Delete Account</button>
         </div>
       </div>
     </div></div>
@@ -70,7 +69,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
@@ -90,8 +89,7 @@
   const userEmail = document.getElementById('userEmail');
   const userSchool = document.getElementById('userSchool');
   const userAge = document.getElementById('userAge');
-  const editBtn = document.getElementById('editBtn');
-  const saveBtn = document.getElementById('saveBtn');
+ 
   const inputs = document.querySelectorAll('#profileSection input');
 
   const setLoadingState = () => {
@@ -128,29 +126,8 @@
     }
   });
 
-  editBtn.addEventListener('click', () => {
-    inputs.forEach(input => input.disabled = false);
-    editBtn.style.display = 'none';
-    saveBtn.style.display = 'inline-block';
-  });
+  
 
-  saveBtn.addEventListener('click', async () => {
-    try {
-      const user = auth.currentUser;
-      if (!user) return;
-      await updateDoc(doc(db, "users", user.uid), {
-        fullName: userName.textContent,
-        school: userSchool.value,
-        age: Number(userAge.value)
-      });
-      inputs.forEach(input => input.disabled = true);
-      saveBtn.style.display = 'none';
-      editBtn.style.display = 'inline-block';
-      alert('Profile updated successfully!');
-    } catch (error) {
-      alert(`Error saving profile: ${error.message}`);
-    }
-  });
 
   function logout() {
   sessionStorage.clear(); // or sessionStorage.removeItem('loggedIn');
@@ -166,6 +143,21 @@
       alert(`Logout failed: ${error.message}`);
     }
   });
+
+  document.getElementById('deleteBtn').addEventListener('click', async () => {
+  if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await deleteDoc(doc(db, "users", user.uid));
+        await user.delete();
+        window.location.href = 'login.html';
+      }
+    } catch (error) {
+      alert(`Error deleting account: ${error.message}`);
+    }
+  }
+});
 </script>
 <div id="chatbot-fab" style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
   <span class="material-icons" style="color:#27c2ed;font-size:45px;">smart_toy</span>

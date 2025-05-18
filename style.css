@@ -492,3 +492,9 @@ body {
 #chatbot-window.keyboard-up {
   bottom: 220px !important; /* Adjust as needed for your device */
 }
+
+@keyframes loadbar {
+  0% { width: 0%; }
+  50% { width: 80%; }
+  100% { width: 0%; }
+}

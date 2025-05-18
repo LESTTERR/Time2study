@@ -141,7 +141,7 @@
         class="tab-label">Home</span></button>
     <button class="tab-item" data-target="tasksSection"><span class="material-icons">assignment</span><span
         class="tab-label">Tasks</span></button>
-    <button class="tab-item" data-target="classesSection"><span class="material-icons">class</span><span
+    <button class="tab-item" data-target="classesSection"><span class="material-icons">school</span><span
         class="tab-label">Classes</span></button>
     <button class="tab-item" data-target="profileSection"><span class="material-icons">person</span><span
         class="tab-label">Profile</span></button>
@@ -170,9 +170,10 @@
         document.getElementById('loadingScreen').style.display = 'none';
         // Show app content
         document.querySelector('.app-container').style.display = 'block';
-        // Hide tab bar and FAB until fully loaded
         document.querySelector('.tab-bar').style.display = 'flex';
         document.querySelector('.fab-container').style.display = 'block';
+        // Show chatbot FAB
+        document.getElementById('chatbot-fab').style.display = 'flex';
       } else {
         window.location.href = 'login.html';
       }
@@ -221,39 +222,48 @@
         orderBy('dueDate')
       );
 
-      onSnapshot(q, (snapshot) => {
-        if (snapshot.empty) {
-          pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
-        } else {
-          pending.innerHTML = '';
-          const now = new Date();
+      // Return a promise that resolves after the first snapshot
+      return new Promise((resolve) => {
+        let first = true;
+        onSnapshot(q, (snapshot) => {
+          if (snapshot.empty) {
+            pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
+          } else {
+            pending.innerHTML = '';
+            const now = new Date();
 
-          snapshot.forEach(doc => {
-            const t = doc.data();
-            // Add error handling for dueDate conversion
-            try {
-              const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+            snapshot.forEach(doc => {
+              const t = doc.data();
+              try {
+                const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
 
-              if (due >= now) {
-                const ti = document.createElement('div');
-                ti.className = 'task-item';
-                ti.innerHTML = `
-                            <div class="task-info">
-                                <h4>${t.name}</h4>
-                                <p>${t.description}</p>
-                                <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
-                            </div>
-                        `;
-                pending.appendChild(ti);
+                if (due >= now) {
+                  const ti = document.createElement('div');
+                  ti.className = 'task-item';
+                  ti.innerHTML = `
+                <div class="task-info">
+                  <h4>${t.name}</h4>
+                  <p>${t.description}</p>
+                  <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
+                </div>
+              `;
+                  pending.appendChild(ti);
+                }
+              } catch (error) {
+                console.error('Error processing task:', error);
               }
-            } catch (error) {
-              console.error('Error processing task:', error);
-            }
-          });
-        }
-      }, (error) => {
-        console.error("Error getting tasks:", error);
-        pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
+            });
+          }
+          // Only resolve the first time
+          if (first) {
+            first = false;
+            resolve();
+          }
+        }, (error) => {
+          console.error("Error getting tasks:", error);
+          pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
+          resolve();
+        });
       });
     }
 
@@ -456,7 +466,7 @@
 
   </script>
   <div id="chatbot-fab"
-    style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
+    style="display:none;position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
     <span class="material-icons" style="color:#27c2ed;font-size:45px;">smart_toy</span>
   </div>
   <div id="chatbot-window"
@@ -546,6 +556,7 @@
       messages.scrollTop = messages.scrollHeight;
     }
   </script>
+
 
 
 </body>
