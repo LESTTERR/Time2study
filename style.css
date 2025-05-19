@@ -111,6 +111,12 @@ body {
   transition: all 0.3s ease;
   max-height: 500px; /* Increased max-height to accommodate full month */
 }
+#monthYear {
+  font-weight: 900;  /* Bold */
+  font-size: 2rem;
+  color: #000000;    /* matching your primary blue */
+  margin-bottom: 1rem;
+}
 
 .calendar-card.expanded .dates-grid {
   max-height: none; /* Allow full month of dates to be displayed */

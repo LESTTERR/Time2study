@@ -146,7 +146,7 @@
     <button class="tab-item" data-target="profileSection"><span class="material-icons">person</span><span
         class="tab-label">Profile</span></button>
   </nav>
-  </div>
+ 
 
   <script src="script.js"></script>
 
@@ -214,58 +214,61 @@
       highlightToday();
     }
 
-    async function loadPendingTasks(user) {
-      const pending = document.getElementById('pendingTasks');
-      const q = query(
-        collection(db, 'tasks'),
-        where("userId", "==", user.uid),
-        orderBy('dueDate')
-      );
+   async function loadPendingTasks(user) {
+  const pending = document.getElementById('pendingTasks');
+  const q = query(
+    collection(db, 'tasks'),
+    where("userId", "==", user.uid),
+    orderBy('dueDate')
+  );
 
-      // Return a promise that resolves after the first snapshot
-      return new Promise((resolve) => {
-        let first = true;
-        onSnapshot(q, (snapshot) => {
-          if (snapshot.empty) {
-            pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
-          } else {
-            pending.innerHTML = '';
-            const now = new Date();
+  // Return a promise that resolves after the first snapshot
+  return new Promise((resolve) => {
+    let first = true;
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
+      } else {
+        pending.innerHTML = '';
+        const now = new Date();
 
-            snapshot.forEach(doc => {
-              const t = doc.data();
-              try {
-                const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+        snapshot.forEach(doc => {
+          const t = doc.data();
+          try {
+            const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
 
-                if (due >= now) {
-                  const ti = document.createElement('div');
-                  ti.className = 'task-item';
-                  ti.innerHTML = `
+            if (due >= now) {
+              const ti = document.createElement('div');
+              const typeClass = t.type ? t.type.toLowerCase() : '';
+              ti.className = `task-item ${typeClass}`;  // Correct here - keep type class
+
+              ti.innerHTML = `
                 <div class="task-info">
                   <h4>${t.name}</h4>
+                  <p><strong>Type:</strong> ${t.type}</p>
                   <p>${t.description}</p>
                   <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
                 </div>
               `;
-                  pending.appendChild(ti);
-                }
-              } catch (error) {
-                console.error('Error processing task:', error);
-              }
-            });
+              pending.appendChild(ti);
+            }
+          } catch (error) {
+            console.error('Error processing task:', error);
           }
-          // Only resolve the first time
-          if (first) {
-            first = false;
-            resolve();
-          }
-        }, (error) => {
-          console.error("Error getting tasks:", error);
-          pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
-          resolve();
         });
-      });
-    }
+      }
+      // Only resolve the first time
+      if (first) {
+        first = false;
+        resolve();
+      }
+    }, (error) => {
+      console.error("Error getting tasks:", error);
+      pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
+      resolve();
+    });
+  });
+}
 
 
 

@@ -13,7 +13,7 @@
 </head>
 
 <body>
-  <div class="app-container">
+  <div class="profile-container"   style="display: none;">
     <div class="content-section active" id="profileSection">
       <div class="profile-card">
         <div class="profile-header">
@@ -44,6 +44,9 @@
         </div>
       </div>
     </div></div>
+<div id="profileLoading" style="display:flex;align-items:center;justify-content:center;height:100vh;">
+  <span style="color:#2196F3;font-size:1.2rem;font-weight:500;">loading profile...</span>
+</div>
 
 
    <nav class="tab-bar">
@@ -56,7 +59,7 @@
     <span class="tab-label">Tasks</span>
   </a>
   <a href="classes.html" class="tab-item">
-    <span class="material-icons">class</span>
+    <span class="material-icons">school</span>
     <span class="tab-label">Classes</span>
   </a>
   <a href="profile.html" class="tab-item active">
@@ -89,8 +92,6 @@
   const userEmail = document.getElementById('userEmail');
   const userSchool = document.getElementById('userSchool');
   const userAge = document.getElementById('userAge');
- 
-  const inputs = document.querySelectorAll('#profileSection input');
 
   const setLoadingState = () => {
     userName.textContent = "Loading...";
@@ -115,6 +116,10 @@
     } catch (error) {
       userName.textContent = "Error loading profile";
       alert(`Error loading profile: ${error.message}`);
+    } finally {
+      // Show profile content and hide loading screen
+      document.getElementById('profileLoading').style.display = 'none';
+      document.querySelector('.profile-container').style.display = 'block';
     }
   };
 
@@ -126,15 +131,6 @@
     }
   });
 
-  
-
-
-  function logout() {
-  sessionStorage.clear(); // or sessionStorage.removeItem('loggedIn');
-  window.location.href = 'login.html';
-}
-
-
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
       await signOut(auth);
@@ -145,20 +141,21 @@
   });
 
   document.getElementById('deleteBtn').addEventListener('click', async () => {
-  if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        await deleteDoc(doc(db, "users", user.uid));
-        await user.delete();
-        window.location.href = 'login.html';
+    if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          await deleteDoc(doc(db, "users", user.uid));
+          await user.delete();
+          window.location.href = 'login.html';
+        }
+      } catch (error) {
+        alert(`Error deleting account: ${error.message}`);
       }
-    } catch (error) {
-      alert(`Error deleting account: ${error.message}`);
     }
-  }
-});
+  });
 </script>
+
 <div id="chatbot-fab" style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
   <span class="material-icons" style="color:#27c2ed;font-size:45px;">smart_toy</span>
 </div>

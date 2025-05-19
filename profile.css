@@ -1,8 +1,8 @@
 :root {
   --sky-blue: #79c2ff;
   --dark-blue: #e4f6ff;
-  --primary: #2f3dff;
-  --primary-light: #eaf0ff;
+  --primary: #6ec9f4;
+  --primary-light: #ffffff;
   --accent: #27c2ed;
   --danger: #e74c3c;
   --danger-bg: #fff5f5;
@@ -10,11 +10,13 @@
   --shadow: 0 8px 32px rgba(30,60,114,0.10);
   --radius: 22px;
   --transition: 0.18s cubic-bezier(.4,0,.2,1);
-}
+
+  }
+  
 
 /* --- Profile Card --- */
 .profile-card {
-  background: linear-gradient(135deg, #fff 70%, var(--primary-light) 100%);
+  background: linear-gradient(135deg, #5555551b 70%, var(--primary-light) 100%);
   padding: 2.2rem 1.7rem 2.5rem 1.7rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);

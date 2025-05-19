@@ -12,7 +12,7 @@
  
 </head>
 <body>
-  <div class="app-container">
+  <div class="app-container" style="display:none;">
     <div class="content-section active" id="classesSection">
       <div class="full-class-card">
         <div class="card-header">
@@ -22,33 +22,38 @@
           <!-- Firebase class items will be loaded here -->
         </div>
       </div>
-    </div>
+    </div></div>
 
     <div class="fab-container">
       <button class="fab-main material-icons" id="addClassFab">add</button>
     </div>
+  
 
-    <nav class="tab-bar">
-      <a href="home.html" class="tab-item"><span class="material-icons">calendar_today</span><span class="tab-label">Home</span></a>
-      <a href="tasks.html" class="tab-item"><span class="material-icons">assignment</span><span class="tab-label">Tasks</span></a>
-      <a href="classes.html" class="tab-item active"><span class="material-icons">class</span><span class="tab-label">Classes</span></a>
-      <a href="profile.html" class="tab-item"><span class="material-icons">person</span><span class="tab-label">Profile</span></a>
-    </nav>
+  <!-- Loader (always outside .app-container) -->
+  <div id="classLoading" style="display:flex;align-items:center;justify-content:center;height:100vh;">
+    <span style="color:#2196F3;font-size:1.2rem;font-weight:500;">Loading class...</span>
   </div>
-<script type="module" src="firebase-init.js"></script>
+
+  <!-- Tab bar (always visible) -->
+  <nav class="tab-bar">
+    <a href="home.html" class="tab-item"><span class="material-icons">calendar_today</span><span class="tab-label">Home</span></a>
+    <a href="tasks.html" class="tab-item"><span class="material-icons">assignment</span><span class="tab-label">Tasks</span></a>
+    <a href="classes.html" class="tab-item active"><span class="material-icons">school</span><span class="tab-label">classes</span></a>
+    <a href="profile.html" class="tab-item"><span class="material-icons">person</span><span class="tab-label">Profile</span></a>
+  </nav>
+
+  <script type="module" src="firebase-init.js"></script>
 <script type="module">
   import { db, auth } from "./firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-// Update imports to include onSnapshot
-import { 
-  collection, 
-  deleteDoc, 
-  doc, 
-  query, 
-  where, 
-  getDocs,
-  onSnapshot  // Add this
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import {
+    collection,
+    deleteDoc,
+    doc,
+    query,
+    where,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   const classesList = document.getElementById("classesList");
 
@@ -57,6 +62,10 @@ import {
       window.location.href = 'login.html';
       return;
     }
+
+    // Show loader, hide app
+    document.getElementById('classLoading').style.display = 'flex';
+    document.querySelector('.app-container').style.display = 'none';
 
     const displayClasses = (classes) => {
       classesList.innerHTML = "";
@@ -106,7 +115,6 @@ import {
           await deleteDoc(doc(db, "classes", id));
           btn.closest(".class-item").remove();
 
-          // Update cache
           const cached = localStorage.getItem("classes");
           if (cached) {
             const updated = JSON.parse(cached).filter(cls => cls.id !== id);
@@ -121,7 +129,6 @@ import {
     };
 
     const loadClasses = async () => {
-      // Show cached classes immediately
       const cached = localStorage.getItem("classes");
       if (cached) {
         try {
@@ -132,31 +139,38 @@ import {
         }
       }
 
-      // Fetch from Firestore
       try {
         const q = query(
           collection(db, "classes"),
           where("userId", "==", user.uid)
         );
-   
-onSnapshot(q, 
-  (snap) => {
-    const classes = snap.docs.map(docSnap => ({
-      ...docSnap.data(),
-      id: docSnap.id
-    }));
-    displayClasses(classes);
-    localStorage.setItem("classes", JSON.stringify(classes));
-  },
-  (error) => {  // Add error handler
-    console.error("Real-time listener error:", error);
-    classesList.innerHTML = `
-      <p style="color: red; text-align: center; padding: 20px;">
-        Connection error: ${error.message}
-      </p>`;
-  }
-);
-  
+
+        onSnapshot(
+          q,
+          (snap) => {
+            const classes = snap.docs.map(docSnap => ({
+              ...docSnap.data(),
+              id: docSnap.id
+            }));
+
+            displayClasses(classes);
+            localStorage.setItem("classes", JSON.stringify(classes));
+
+            // ✅ Hide loader, show app only after data is fetched
+            document.getElementById('classLoading').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'block';
+          },
+          (error) => {
+            console.error("Real-time listener error:", error);
+            classesList.innerHTML = `
+              <p style="color: red; text-align: center; padding: 20px;">
+                Connection error: ${error.message}
+              </p>
+            `;
+            document.getElementById('classLoading').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'block';
+          }
+        );
 
       } catch (error) {
         console.error("Error loading classes:", error);
@@ -165,10 +179,11 @@ onSnapshot(q,
             Error loading classes: ${error.message}
           </p>
         `;
+        document.getElementById('classLoading').style.display = 'none';
+        document.querySelector('.app-container').style.display = 'block';
       }
     };
 
-    // Time conversion helper
     function to12Hour(t) {
       const [H, M] = t.split(":").map(Number);
       const ampm = H >= 12 ? "PM" : "AM";
@@ -184,6 +199,7 @@ onSnapshot(q,
     window.location.href = 'add-class.html';
   });
 </script>
+
      <div id="chatbot-fab" style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
   <span class="material-icons" style="color:#27c2ed;font-size:45px;">smart_toy</span>
 </div>
@@ -268,7 +284,6 @@ function addMessage(sender, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 </script>
-
 </body>
 </html>
 

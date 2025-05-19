@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
-  background: linear-gradient(180deg, #87CEEB, #1E3C72);
+      background: linear-gradient(180deg, #87CEEB, #1E3C72);
       font-family: 'Poppins', sans-serif;
       display: flex;
       align-items: center;
@@ -20,11 +20,11 @@
     }
 
     .form-card {
-      background: var(--card-bg);
+      background: var(--card-bg, rgba(255, 255, 255, 0.3));
       backdrop-filter: blur(12px);
-      border: var(--border);
+      border: var(--border, 1px solid #ccc);
       border-radius: 24px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow, 0 4px 12px rgba(0, 0, 0, 0.2));
       max-width: 400px;
       width: 100%;
       padding: 2rem;
@@ -37,7 +37,7 @@
       font-size: 1.5rem;
       font-weight: 600;
       text-align: center;
-      color: var(--text);
+      color: var(--text, black);
     }
 
     form {
@@ -45,16 +45,15 @@
       flex-direction: column;
       gap: 1rem;
     }
-    
-    label {
-  display: block;
-  font-weight: 480;
-  margin-bottom: 2px;
-  margin-top: 2px;
-  color: black;
-  font-size: 1.1rem;
-}
 
+    label {
+      display: block;
+      font-weight: 480;
+      margin-bottom: 2px;
+      margin-top: 2px;
+      color: black;
+      font-size: 1.1rem;
+    }
 
     input[type="text"],
     input[type="datetime-local"],
@@ -64,7 +63,7 @@
       border-radius: 12px;
       background: rgba(255,255,255,0.5);
       font-size: 1rem;
-      color: var(--text);
+      color: black;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
     }
 
@@ -78,8 +77,30 @@
       color: #999;
     }
 
+    .type-toggle {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .type-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .assignment-label {
+      color: green;
+    }
+
+    .project-label {
+      color: red;
+    }
+
     button[type="submit"] {
-      background: var(--primary);
+      background: var(--primary, #007bff);
       color: white;
       font-weight: 600;
       border: none;
@@ -97,7 +118,7 @@
     #backTasks {
       background: none;
       border: none;
-      color: var(--secondary);
+      color: var(--secondary, #333);
       font-weight: 500;
       font-size: 0.95rem;
       text-align: center;
@@ -116,8 +137,22 @@
     <form id="taskForm">
       <input type="text" id="taskName" placeholder="Task Name" required>
       <textarea id="taskDesc" placeholder="Description" required></textarea>
-          <label for="taskDateTime">Deadline:</label>
-      <input type="datetime-local" id="taskDateTime"  required>
+      
+      <label for="taskDateTime">Deadline:</label>
+      <input type="datetime-local" id="taskDateTime" required>
+
+      <label>Task Type:</label>
+      <div class="type-toggle">
+        <label>
+          <input type="radio" name="taskType" value="Assignment" checked>
+          <span class="assignment-label">Assignment</span>
+        </label>
+        <label>
+          <input type="radio" name="taskType" value="Project">
+          <span class="project-label">Project</span>
+        </label>
+      </div>
+
       <button type="submit">Save Task</button>
     </form>
     <button id="backTasks">← Back to Tasks</button>
@@ -147,23 +182,21 @@
     const form = document.getElementById('taskForm');
     const backBtn = document.getElementById('backTasks');
 
-    // Handle authentication state
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'login.html';
         return;
       }
 
-      // Back button handler
       backBtn.onclick = () => window.location = 'tasks.html';
 
-      // Form submission handler
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const name = document.getElementById('taskName').value.trim();
         const desc = document.getElementById('taskDesc').value.trim();
         const due = document.getElementById('taskDateTime').value;
+        const type = document.querySelector('input[name="taskType"]:checked').value;
 
         if (!name || !desc || !due) {
           alert("Please fill in all fields.");
@@ -175,7 +208,8 @@
             name,
             description: desc,
             dueDate: due,
-            userId: user.uid, // Add user ID to document
+            type,
+            userId: user.uid,
             createdAt: new Date().toISOString()
           });
           alert("✅ Task saved!");
@@ -189,5 +223,3 @@
   </script>
 </body>
 </html>
-
-

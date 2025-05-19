@@ -70,7 +70,7 @@
   
   .task-list .task-item {
     background: #fff; /* solid white background */
-    border-left: 4px solid var(--accent);
+    
     padding: 1rem;
     border-radius: 12px;
     margin-bottom: 0.75rem;
@@ -104,7 +104,10 @@
   .task-item {
     position: relative;
     padding-right: 40px !important;
-  }
+   border-left: 12px solid var(--task-color, var(--accent));
+}
+
+  
   
   
   
@@ -190,8 +193,8 @@
   .class-item,
   .task-item {
     background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(245,245,245,0.9));
-    border: var(--border); /* First set all borders */
-    border-left: 4px solid var(--primary); /* Then override left border */
+    border-left: 8px solid var(--task-color, var(--accent));
+    
     border-radius: 20px;
     padding: 1rem;
     box-shadow: var(--shadow);
@@ -201,6 +204,13 @@
     transition: transform 0.3s ease, background 0.3s ease;
   }
   
+
+
+
+
+
+
+
   .class-item:hover,
   .task-item:hover {
     transform: translateY(-5px);
@@ -233,3 +243,9 @@
     border-radius: 50%;
     padding: 5px;
   }
+.task-item.Assignment { --task-color: green; }
+.task-item.Project { --task-color: red; }
+
+/*home ito*/
+.task-item.assignment { --task-color: green; }
+.task-item.project { --task-color: red; }
