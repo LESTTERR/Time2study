@@ -195,12 +195,13 @@
   
   .schedule-list .schedule-item {
     background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(245,245,245,0.9));
-    border-left: 4px solid var(--primary);
+    border-left: 7px solid var(--primary);
     padding: 1rem;
     border-radius: 12px;
     margin-bottom: 0.75rem;
     display: flex;
     gap: 1rem;
+    text-align: left;
   }
   .schedule-item {
     display: flex;
@@ -220,11 +221,13 @@
           font-weight: 700;
           margin-bottom: 4px;
          
+         
       }
       
       .schedule-item p {
           font-size: 0.9rem;
           color: #666;
+         
           
       }
       .class-actions .delete-btn:hover {
@@ -239,7 +242,7 @@
       .class-item {
         background: linear-gradient(45deg, rgba(255,255,255,0.9), rgba(245,245,245,0.9));
         border: var(--border); /* First set all borders */
-        border-left: 4px solid var(--primary); /* Then override left border */
+        border-left: 7px solid var(--primary); /* Then override left border */
         border-radius: 20px;
         padding: 1rem;
         box-shadow: var(--shadow);

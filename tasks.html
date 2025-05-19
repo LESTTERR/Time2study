@@ -102,7 +102,9 @@ div.className = `task-item ${task.type || ''}` + (task.completed ? " done" : "")
        
          div.innerHTML = `
   <div class="task-info">
-    <h4>${task.name}</h4> <p style="font-size: 0.85em; color: gray;"><strong>Type:</strong> ${task.type}</p>
+       <p style="font-size: 1.5em; font-weight: bold;
+ color: ${task.type === 'Assignment' ? 'green' : task.type === 'Project' ? 'red' : 'black'};">
+      <strong>${task.type}</strong></p><h4>${task.name}</h4>
     <p>${task.description}</p>
    
     <span class="deadline">Deadline: ${dueDate.toLocaleDateString('en-US', options)}</span>

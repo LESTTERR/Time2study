@@ -243,9 +243,9 @@
     border-radius: 50%;
     padding: 5px;
   }
-.task-item.Assignment { --task-color: green; }
-.task-item.Project { --task-color: red; }
+.task-item.Assignment { --task-color: rgb(0, 184, 95); }
+.task-item.Project { --task-color: rgb(255, 0, 0); }
 
 /*home ito*/
-.task-item.assignment { --task-color: green; }
-.task-item.project { --task-color: red; }
+.task-item.assignment { --task-color:rgb(0, 184, 95); }
+.task-item.project { --task-color: rgb(255, 0, 0); }

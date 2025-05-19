@@ -14,12 +14,32 @@
 
 <body>
   <div class="profile-container"   style="display: none;">
+
+
     <div class="content-section active" id="profileSection">
       <div class="profile-card">
+
+
         <div class="profile-header">
-          <div class="profile-pic">
-            <span class="material-icons">account_circle</span>
-          </div>
+    
+  <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+    <img id="userPhoto" src="/pfp.png" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+<button id="togglePfpOptions" style="position: absolute; bottom: 0; left: -20px; background: #2196F3; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-weight: bold; cursor: pointer;">+</button>
+
+<!-- Profile Picture Selection Options -->
+<div id="profileOptions" style="display: none; margin-top: 10px; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+  <img src="/pfp.png" class="pfp-option" style="width: 50px; cursor: pointer; margin: 4px;">
+  <img src="/pfp2.png" class="pfp-option" style="width: 50px; cursor: pointer; margin: 4px;">
+  <img src="/pfp3.png" class="pfp-option" style="width: 50px; cursor: pointer; margin: 4px;">
+</div>
+
+<button id="savePfpBtn" style="display: none; margin-top: 8px;">Save Picture</button>
+
+
+</div>
+
+
+
           <h2 id="userName">Loading...</h2>
         </div>
 
@@ -33,7 +53,7 @@
             <input type="text" id="userSchool" disabled>
           </div>
           <div class="info-row">
-            <span class="material-icons">person</span>
+            <span class="material-icons">calendar_today</span>
             <input type="number" id="userAge" disabled>
           </div>
         </div>
@@ -103,8 +123,10 @@
   const loadProfile = async (uid) => {
     setLoadingState();
     try {
+
       const userDoc = await getDoc(doc(db, "users", uid));
       if (userDoc.exists()) {
+
         const data = userDoc.data();
         userName.textContent = data.fullName || 'Not set';
         userEmail.value = data.email || 'Not set';
@@ -154,6 +176,41 @@
       }
     }
   });
+
+  let selectedPfpUrl = "";
+
+document.querySelectorAll(".pfp-option").forEach(img => {
+  img.addEventListener("click", () => {
+    selectedPfpUrl = img.src;
+    document.getElementById("userPhoto").src = selectedPfpUrl;
+  });
+});
+
+document.getElementById("savePfpBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (user && selectedPfpUrl) {
+    try {
+      await updateDoc(doc(db, "users", user.uid), {
+        profilePicture: selectedPfpUrl
+      });
+      alert("Profile picture updated!");
+    } catch (error) {
+      alert("Failed to update: " + error.message);
+    }
+  } else {
+    alert("Please select a profile picture first.");
+  }
+});// Toggle profile picture options
+document.getElementById("togglePfpOptions").addEventListener("click", () => {
+  const options = document.getElementById("profileOptions");
+  const saveBtn = document.getElementById("savePfpBtn");
+
+  const isVisible = options.style.display === "block";
+  options.style.display = isVisible ? "none" : "block";
+  saveBtn.style.display = isVisible ? "none" : "block";
+});
+
+
 </script>
 
 <div id="chatbot-fab" style="position:fixed;bottom:49px;right:32px;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;width:98px;height:75px;background:rgba(255,255,255,0.95);border-radius:50%;">
@@ -239,6 +296,44 @@ function addMessage(sender, text) {
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
 }
+</script>
+<script>
+  const userPhoto = document.getElementById('userPhoto');
+  const profileOptions = document.getElementById('profileOptions');
+  const togglePfpOptions = document.getElementById('togglePfpOptions');
+  const pfpOptions = document.querySelectorAll('.pfp-option');
+  const savePfpBtn = document.getElementById('savePfpBtn');
+
+  let selectedPfp = null;
+
+  // Load saved profile picture from localStorage
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedPfp = localStorage.getItem('selectedPfp');
+    if (savedPfp) {
+      userPhoto.src = savedPfp;
+    }
+  });
+
+
+
+  // Handle profile picture selection
+  pfpOptions.forEach(pfp => {
+    pfp.addEventListener('click', () => {
+      selectedPfp = pfp.src;
+      userPhoto.src = selectedPfp;
+      savePfpBtn.style.display = 'block';
+    });
+  });
+
+  // Save selected profile picture permanently
+  savePfpBtn.addEventListener('click', () => {
+    if (selectedPfp) {
+      localStorage.setItem('selectedPfp', selectedPfp);
+      savePfpBtn.style.display = 'none';
+      profileOptions.style.display = 'none';
+      alert("Profile picture updated!");
+    }
+  });
 </script>
 
  </div>
