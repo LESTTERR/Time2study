@@ -178,7 +178,7 @@
 }
 
 .schedule-list .schedule-item {
-  border-left: 10px solid var(--primary);
+  border-left: 8px solid rgb(255, 0, 255);
   text-align: left;
   align-items: center;
   justify-content: space-between;
@@ -207,7 +207,7 @@
 .class-item {
   flex-direction: column;
   gap: 0.5rem;
-  border-left: 10px solid violet;
+  border-left: 8px solid rgb(255, 0, 255);
 }
 
 .class-item:hover {
