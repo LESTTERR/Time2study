@@ -154,7 +154,7 @@
 
   <script type="module">
     import { db, auth } from "./firebase-init.js";
-    import { collection, query, orderBy, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { collection, query, orderBy, where, onSnapshot, getDocs  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm';
@@ -165,6 +165,7 @@
       if (user) {
         await initializeCalendar(user);
         await loadPendingTasks(user);
+         await checkUpcomingAlerts(user);
         await loadStatistics(user);
         // Hide loading screen
         document.getElementById('loadingScreen').style.display = 'none';
@@ -220,6 +221,7 @@
     collection(db, 'tasks'),
     where("userId", "==", user.uid),
     orderBy('dueDate')
+    
   );
 
   // Return a promise that resolves after the first snapshot
@@ -245,7 +247,7 @@
               ti.innerHTML = `
                 <div class="task-info">
                   <h4>${t.name}</h4>
-                  <p><strong>Type:</strong> ${t.type}</p>
+                  
                   <p>${t.description}</p>
                   <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
                 </div>
@@ -376,6 +378,52 @@
         fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
       });
     }
+async function checkUpcomingAlerts(user) {
+  const now = new Date();
+  const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+  const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+  const classQuery = query(collection(db, "classes"), where("userId", "==", user.uid));
+  const taskQuery = query(collection(db, "tasks"), where("userId", "==", user.uid));
+
+  let showAlert = false;
+  let alertMessages = [];
+
+  // Check classes
+  const classSnapshot = await getDocs(classQuery);
+  classSnapshot.forEach(doc => {
+    const c = doc.data();
+    const classDays = c.days.split(/,\s*/);
+    const today = now.toLocaleString('en-US', { weekday: 'long' });
+
+    if (classDays.includes(today)) {
+      const [startH, startM] = c.time.split(" - ")[0].split(":").map(Number);
+      const classTime = new Date(now);
+      classTime.setHours(startH, startM, 0, 0);
+
+      if (classTime > now && classTime <= twoHoursLater) {
+        alertMessages.push(`Upcoming class "${c.name}" starts at ${c.time.split(" - ")[0]}`);
+        showAlert = true;
+      }
+    }
+  });
+
+  // Check tasks
+  const taskSnapshot = await getDocs(taskQuery);
+  taskSnapshot.forEach(doc => {
+    const t = doc.data();
+    const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+    if (due > now && due <= nextDay) {
+      alertMessages.push(`Task "${t.name}" is due soon (${due.toLocaleDateString()})`);
+      showAlert = true;
+    }
+  });
+
+  if (showAlert) {
+   alertMessages.forEach(msg => showNotification(msg));
+
+  }
+}
 
     // Statistics Chart
     async function loadStatistics(user) {
@@ -446,6 +494,37 @@
     }
 
     window.auth = auth;
+
+
+    function showNotification(message) {
+  const container = document.getElementById('alertBoxContainer');
+  const box = document.createElement('div');
+  box.textContent = message;
+
+  box.style.cssText = `
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 0.95rem;
+    max-width: 300px;
+    animation: fadein 0.3s ease, fadeout 0.5s ease 4.5s;
+    opacity: 0;
+  `;
+
+  // Fade-in
+  setTimeout(() => box.style.opacity = 1, 10);
+  // Fade-out and remove
+  setTimeout(() => {
+    box.style.opacity = 0;
+    setTimeout(() => container.removeChild(box), 500);
+  }, 5000);
+
+  container.appendChild(box);
+}
+
   </script>
 
   <script>
@@ -560,6 +639,7 @@
     }
   </script>
 
+<div id="alertBoxContainer" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;"></div>
 
 
 </body>
