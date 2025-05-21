@@ -75,14 +75,38 @@
         return;
       }
 
-      classes.forEach(d => {
-        const div = document.createElement("div");
-        div.className = "class-item";
+ function getClassTimes(classData) {
+  // Case 1: Single time string "4:00 PM - 6:00 PM"
+  if (classData.time && classData.time.includes('-')) {
+    const parts = classData.time.split('-').map(t => t.trim());
+    return { start: parts[0], end: parts[1] };
+  }
+  
+  // Case 2: Separate startTime and endTime fields
+  if (classData.startTime && classData.endTime) {
+    return { start: classData.startTime, end: classData.endTime };
+  }
+  
+  // Case 3: Single time value (unlikely but handle it)
+  if (classData.time) {
+    return { start: classData.time, end: 'N/A' };
+  }
+  
+  // Default fallback
+  return { start: 'N/A', end: 'N/A' };
+}
 
-        const timeString = d.time || `${d.startTime} - ${d.endTime}`;
-        const [start, end] = timeString.split("-").map(t => t.trim());
-        const start12h = to12Hour(start);
-        const end12h = to12Hour(end);
+// Then update your display code
+classes.forEach(d => {
+  const div = document.createElement("div");
+  div.className = "class-item";
+  
+  // Get times using our helper
+  const { start, end } = getClassTimes(d);
+  
+  // Convert to 12-hour format
+  const start12h = to12Hour(start);
+  const end12h = to12Hour(end);
 
         div.innerHTML = `
           <div class="class-layout">
@@ -184,13 +208,27 @@
       }
     };
 
-    function to12Hour(t) {
-      const [H, M] = t.split(":").map(Number);
-      const ampm = H >= 12 ? "PM" : "AM";
-      const h12 = H % 12 || 12;
-      const m2 = M.toString().padStart(2, '0');
-      return `${h12}:${m2} ${ampm}`;
-    }
+ function to12Hour(t) {
+  if (!t || t === 'N/A') return 'N/A';
+  
+  // If already in 12-hour format (like "6 PM"), return as-is
+  if (t.includes('AM') || t.includes('PM')) {
+    return t.trim();
+  }
+  
+  try {
+    // Handle 24-hour format (like "16:00")
+    const [hours, minutes] = t.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    const displayMinutes = (minutes || 0).toString().padStart(2, '0');
+    
+    return `${displayHours}:${displayMinutes} ${ampm}`;
+  } catch (e) {
+    console.warn("Invalid time format:", t);
+    return t; // Return original if we can't convert
+  }
+}
 
     loadClasses();
   });
