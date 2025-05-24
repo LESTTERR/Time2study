@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="tasks.css">
   <link rel="stylesheet" href="class.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" type="image/png" href="logo.png">
   <style>
@@ -200,11 +204,64 @@
       }
 
       const dayCount = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      for (let d = 1; d <= dayCount; d++) {
-        const s = document.createElement('span');
-        s.textContent = d;
-        datesGrid.appendChild(s);
-      }
+      
+
+const taskDotColors = new Map();  // key: day number, value: color
+
+const taskQuery = query(collection(db, 'tasks'), where("userId", "==", user.uid));
+const taskSnapshot = await getDocs(taskQuery);
+taskSnapshot.forEach(doc => {
+  const t = doc.data();
+  const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+
+  if (due.getMonth() === now.getMonth() && due.getFullYear() === now.getFullYear()) {
+    const day = due.getDate();
+
+    // Prioritize red if both types exist on the same day
+    const current = taskDotColors.get(day);
+    const taskType = (t.type || "").toLowerCase();
+
+    const color =
+      taskType === "assignment" ? "green" :
+      taskType === "project" ? "red" :
+      "black";
+
+    if (!current || current !== "red") {
+      taskDotColors.set(day, color);
+    }
+  }
+});
+
+
+for (let d = 1; d <= dayCount; d++) {
+  const s = document.createElement('span');
+  s.textContent = d;
+
+  // Add red dot if task is due this day
+if (taskDotColors.has(d)) {
+  const dot = document.createElement('div');
+  const color = taskDotColors.get(d);
+  dot.style.cssText = `
+    width: 6px;
+    height: 6px;
+    background-color: ${color};
+    border-radius: 50%;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+  `;
+  s.style.position = 'relative';
+  s.appendChild(dot);
+}
+
+
+  datesGrid.appendChild(s);
+}
+
+
+
+
 
       toggleCalendar.addEventListener('click', () => {
         calendarGrid.classList.toggle('collapsed');

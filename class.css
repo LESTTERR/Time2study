@@ -1,5 +1,5 @@
 :root {
-  --primary: #38c0ff;
+ --primary: #38c0ff;
   --secondary: #6c5ce7;
   --accent: #ff7675;
   --background: #f8f9ff;
@@ -179,9 +179,10 @@
 
 .schedule-list .schedule-item {
   border-left: 6px solid rgb(0, 153, 213);
-  text-align: left;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .schedule-item .time {
@@ -192,16 +193,30 @@
   text-align: center;
 }
 
-.schedule-item h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 4px;
+.schedule-item .info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the h4 and p horizontally */
+  justify-content: center;
+  text-align: left; /* Keep the text aligned within itself */
 }
 
-.schedule-item p {
-  font-size: 0.9rem;
-  color: #666;
+.schedule-item .info h4 {
+  font-size: 1.4rem; /* Bigger */
+  font-weight: 800;  /* Bolder */
+  margin: 0 0 4px 0;
+  color: var(--text); /* Optional: stronger color */
 }
+
+.schedule-item .info p {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+
+ 
+}
+
 
 /* ========== Class Item ========== */
 .class-item {

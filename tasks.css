@@ -11,7 +11,10 @@
     --sky-blue: #79c2ff;
     --dark-blue: rgb(228 246 255);
   }
-  
+  body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
 
 /* ========== Task Card ========== */
 .full-task-card .card-header {
@@ -21,7 +24,7 @@
     border-bottom: var(--border);
     margin-bottom: 1rem;
   }
-  .card-header h3 {
+  .card-header h3 {font-family: 'M PLUS Rounded 1c', sans-serif;
     font-weight: 700 !important;     /* Extra bold */
     font-size: 1.55rem !important;  /* 28px equivalent */
   

@@ -181,66 +181,75 @@
   </div>
  
 <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    sendEmailVerification,
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // Updated Firebase Configuration (verify these values in your Firebase Console)
-      const firebaseConfig = {
-        apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
-        authDomain: "time2study-4f2f3.firebaseapp.com",
-        projectId: "time2study-4f2f3",
-        storageBucket: "time2study-4f2f3.appspot.com", // Changed from .firebasestorage.app
-        messagingSenderId: "856561565211",
-        appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
-        measurementId: "G-9S9C5D6TXF"
-      };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDBZ7tcCJJdGCo7C8FXRiUPQ8OfOzexllc",
+    authDomain: "time2study-4f2f3.firebaseapp.com",
+    projectId: "time2study-4f2f3",
+    storageBucket: "time2study-4f2f3.appspot.com",
+    messagingSenderId: "856561565211",
+    appId: "1:856561565211:web:e59307f6c4dcb7a52582be",
+    measurementId: "G-9S9C5D6TXF"
+  };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-      // Registration Handler
-      document.getElementById('registerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        // Get form values
-        const getValue = id => document.getElementById(id).value.trim();
-        const email = getValue('regEmail');
-        const password = getValue('regPassword');
-        const confirmPassword = getValue('regConfirmPassword');
-        const fullName = getValue('fullName');
-        const school = getValue('schoolName');
-        const age = getValue('age');
+    const getValue = id => document.getElementById(id).value.trim();
+    const email = getValue('regEmail');
+    const password = getValue('regPassword');
+    const confirmPassword = getValue('regConfirmPassword');
+    const fullName = getValue('fullName');
+    const school = getValue('schoolName');
+    const age = getValue('age');
 
-        // Validate passwords
-        if (password !== confirmPassword) {
-          alert("Passwords don't match!");
-          return;
-        }
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
 
-        try {
-          // Create user account
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          
-          // Save additional user data to Firestore
-          await setDoc(doc(db, "users", userCredential.user.uid), {
-            uid: userCredential.user.uid,
-            email,
-            fullName,
-            school,
-            age: parseInt(age),
-            createdAt: new Date()
-          });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-          alert("Registration successful! Redirecting...");
-          window.location.href = 'home.html';
-        } catch (error) {
-          console.error("Error details:", error);
-          alert(`Registration failed: ${error.message}`);
-        }
+      // Send email verification
+      await sendEmailVerification(user);
+
+      // Save user data
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email,
+        fullName,
+        school,
+        age: parseInt(age),
+        createdAt: new Date()
       });
-    </script>
+
+      alert("Registration successful! A verification email has been sent to your inbox. Please verify before logging in.");
+      
+      // Optionally sign out after registration to force verification before login
+      await signOut(auth);
+
+      // Redirect or stay on the page
+      window.location.href = "login.html";
+    } catch (error) {
+      console.error("Error details:", error);
+      alert(`Registration failed: ${error.message}`);
+    }
+  });
+</script>
+
 </body>
 </html>
