@@ -5,7 +5,7 @@
     <meta name="theme-color" content="#2196F3">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyFlow | Get Started</title>
+    <title>StudyFlow | Smart Study Scheduling App</title>
     <style>
         * {
             margin: 0;
@@ -17,40 +17,74 @@
         body {
             background: linear-gradient(180deg, #79c2ff, rgb(228 246 255));
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: #2d3748;
         }
 
-        .container {
-            text-align: center;
-            padding: 2rem;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 80%;
-            margin: 1rem;
-            animation: fadeIn 0.8s ease-out;
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .logo-image {
-            width: 200px;
-            margin-bottom: 1.5rem;
+            width: 40px;
+            height: 40px;
         }
 
-        h1 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: #2d3748;
+        .logo-text {
+            font-size: 1.5rem;
             font-weight: 700;
+            color: #4299e1;
         }
 
-        p {
-            font-size: 0.7rem;
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #4299e1;
+        }
+
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
             margin-bottom: 1.5rem;
-            color: gray;
-            line-height: 1.5;
+            color: #2d3748;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #4a5568;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
         }
 
         .cta-button {
@@ -64,6 +98,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-block;
+            text-decoration: none;
+            margin: 0.5rem;
         }
 
         .cta-button:hover {
@@ -71,23 +107,296 @@
             transform: translateY(-2px);
         }
 
+        .secondary-button {
+            background: white;
+            color: #4299e1;
+            border: 1px solid #4299e1;
+        }
+
+        .features {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #2d3748;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #4299e1;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .feature-desc {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .screenshots {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .screenshot-container {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screenshot {
+            width: 250px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .screenshot:hover {
+            transform: scale(1.05);
+        }
+
+        
+
+        footer {
+            background-color: #2d3748;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            color: #4299e1;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-column a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .copyright {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #4a5568;
+            color: #a0aec0;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Loading Screen -->
-    
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="StudyFlow Logo" class="logo-image">
+            <span class="logo-text">Time2Study</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#screenshots">Screenshots</a></li>
+                
+                <li><a href="login.html" class="cta-button">Login</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- Main App Content -->
-    <div class="app-container container">
-        <img src="logo.png" alt="StudyFlow Logo" class="logo-image">
-        <h1>Organize Your Study Schedule</h1>
-        <p>Boost your productivity and achieve your academic goals with our intuitive scheduling system.</p>
-        <button class="cta-button" onclick="window.location.href='login.html'">Get Started</button>
+    <section class="hero">
+        <h1>Organize Your Study Schedule Smarter</h1>
+        <p>Time2Study is an scheduling app that helps students optimize their study time, track progress, and achieve academic goals.</p>
+        <div>
+            <a href="login.html" class="cta-button">Get Started</a>
+            <a href="#features" class="cta-button secondary-button">Learn More</a>
+        </div>
+    </section>
+<section class="features" id="features">
+    <h2 class="section-title">Key Features</h2>
+    <div class="features-grid">
+
+        <div class="feature-card" style="animation: fadeIn 0.6s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <h3 class="feature-title">Class & Task Management</h3>
+            <p class="feature-desc">Easily add, update, and manage your classes and tasks.</p>
+        </div>
+
+        <div class="feature-card" style="animation: fadeIn 0.8s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <h3 class="feature-title">Chatbot Assistant</h3>
+            <p class="feature-desc">Interact with your schedule using a chatbot check tasks, add class by simply chatting.</p>
+        </div>
+
+        <div class="feature-card" style="animation: fadeIn 1s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h3 class="feature-title">Automatic Calendar</h3>
+            <p class="feature-desc">Your calendar auto-updates daily and displays your schedule. Deadlines are marked with dots so you never miss anything.</p>
+        </div>
+
+        <div class="feature-card" style="animation: fadeIn 1.2s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="feature-title">Analytics Dashboard</h3>
+            <p class="feature-desc">Track your academic progress with real-time analytics on your total classes, tasks, pending items, and completed work.</p>
+        </div>
+
+        <div class="feature-card" style="animation: fadeIn 1.4s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3 class="feature-title">Deadline Indicators</h3>
+            <p class="feature-desc">Red dots appear on the calendar to highlight task deadlines, giving you a quick overview of urgent items each day.</p>
+        </div>
+
+        <div class="feature-card" style="animation: fadeIn 1.6s ease-out;">
+            <div class="feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="feature-title">Progressive Web App</h3>
+            <p class="feature-desc">Install it like an app and enjoy a smooth, fast, mobile-friendly experience from any device.</p>
+        </div>
+
     </div>
+</section>
+
+
+    <section class="screenshots" id="screenshots">
+        <h2 class="section-title">App Screenshots</h2>
+        <div class="screenshot-container">
+            <img src="hom.png" alt="Dashboard view" class="screenshot">
+            <img src="adn.png" alt="Schedule view" class="screenshot">
+            <img src="adt.png" alt="Progress analytics" class="screenshot">
+            <img src="prf.png" alt="Resource library" class="screenshot">
+            
+              <img src="allc.png" alt="Progress analytics" class="screenshot">
+            <img src="allt.png" alt="Resource library" class="screenshot">
+            <img src="cht.png" alt="Mobile view" class="screenshot">
+        </div>
+    </section>
+
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>StudyFlow</h3>
+                <p>The study scheduling app designed to help students achieve academic success through better time management and organization.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#screenshots">Screenshots</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2025 Time2Study. All rights reserved.
+        </div>
+    </footer>
+
+    
 
     <!-- Service Worker Registration -->
     <script>

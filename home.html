@@ -17,6 +17,48 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" type="image/png" href="logo.png">
   <style>
+    
+    .responsive-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: nowrap;
+      align-items: flex-start;
+  }
+
+  .calendar-card,
+  .schedule-task-wrapper {
+    
+    min-width: 365px;
+     min-width: 100%;
+    width: 100%;
+    flex-shrink: 1;
+  }
+
+  .schedule-task-wrapper {
+       
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {  
+   .schedule-task-wrapper {
+    margin-top: 31px;
+  }
+}
+
+@media (min-width: 768px) {  
+  .calendar-card,
+  .schedule-task-wrapper {
+gap: 10px;
+    min-width: 600px;
+  }
+}
+  @media (max-width: 768px) {
+    .responsive-wrapper {
+      flex-direction: column;
+    }
+  }
     .selected-date {
       background-color: #2196F3;
       color: white;
@@ -73,20 +115,21 @@
 
 
 
-  <div class="app-container" style="display: none;">
-    <div class="content-section active" id="homeSection">
+ <div class="app-container" style="display: none;">
+  <div class="content-section active" id="homeSection">
 
-      <!-- Dots at the top center -->
-      <div class="page-indicator">
-        <div class="dot active" id="dot1"></div>
-        <div class="dot" id="dot2"></div>
-      </div>
+    <!-- Dots at the top center -->
+    <div class="page-indicator">
+      <div class="dot active" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+    </div>
 
-      <!-- Swipe Wrapper -->
-      <div class="swipe-wrapper" id="swipeWrapper">
+    <!-- Swipe Wrapper -->
+    <div class="swipe-wrapper" id="swipeWrapper">
 
-        <!-- Page 1 -->
-        <div class="swipe-page">
+      <!-- Page 1 -->
+      <div class="swipe-page" style="padding: 1rem;">
+        <div class="responsive-wrapper">
           <div class="calendar-card">
             <div class="calendar-header">
               <h2 id="monthYear"></h2>
@@ -100,37 +143,42 @@
               <div class="dates-grid" id="datesGrid"></div>
             </div>
           </div>
-        </div>
 
-        <!-- Page 2 -->
-        <div class="swipe-page dashboard-page">
-          <div class="dashboard-card">
-            <h3>Class & Task Statistics</h3>
-            <div class="chart-container">
-              <canvas id="myBarChart"></canvas>
+          <div class="schedule-task-wrapper">
+            <div class="schedule-card">
+              <div class="card-header">
+                <h3><span class="material-icons">schedule</span>Schedule</h3>
+              </div>
+              <div class="schedule-list" id="scheduleList"></div>
+            </div>
+
+            <div class="task-card">
+              <div class="card-header">
+                <h3><span class="material-icons">assignment</span>Pending Tasks</h3>
+              </div>
+              <div class="task-list" id="pendingTasks"></div>
             </div>
           </div>
         </div>
-
       </div>
-    </div>
 
-
-
-    <div class="schedule-card">
-      <div class="card-header">
-        <h3><span class="material-icons">schedule</span>Schedule</h3>
-        
+      <!-- Page 2 -->
+      <div class="swipe-page dashboard-page">
+        <div class="dashboard-card">
+          <h3>Class & Task Statistics</h3>
+          <div class="chart-container">
+            <canvas id="myBarChart"></canvas>
+          </div>
+        </div>
       </div>
-      <div class="schedule-list" id="scheduleList"></div>
-    </div>
 
-    <div class="task-card">
-      <div class="card-header">
-        <h3><span class="material-icons">assignment</span>Pending Tasks</h3>
-      </div>
-      <div class="task-list" id="pendingTasks"></div>
     </div>
+  </div>
+</div>
+
+
+
+   
 
     <div class="fab-container">
       <button class="fab-main material-icons" id="fabMain">add</button>
