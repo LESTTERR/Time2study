@@ -193,28 +193,26 @@
   text-align: center;
 }
 
-.schedule-item .info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the h4 and p horizontally */
-  justify-content: center;
-  text-align: left; /* Keep the text aligned within itself */
-}
 
-.schedule-item .info h4 {
-  font-size: 1.4rem; /* Bigger */
-  font-weight: 800;  /* Bolder */
+
+/* Add this to your class.css file */
+.schedule-item .details h4 {
+  font-size: 1.2rem;
+  font-weight: 800;  /* Extra bold */
   margin: 0 0 4px 0;
-  color: var(--text); /* Optional: stronger color */
+  color: var(--text);
 }
 
-.schedule-item .info p {
+.schedule-item .details p {
   font-size: 0.95rem;
   color: #666;
   margin: 0;
+}
 
- 
+.schedule-item .time {
+  font-weight: 700;
+  color: var(--secondary);
+  min-width: 90px;
 }
 
 

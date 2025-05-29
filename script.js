@@ -74,3 +74,4 @@ swipeWrapper.addEventListener("touchend", e => {
     switchPage(1); // Swipe left
   }
 });
+
