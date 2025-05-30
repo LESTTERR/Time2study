@@ -131,13 +131,10 @@ gap: 10px;
       <div class="swipe-page" style="padding: 1rem;">
         <div class="responsive-wrapper">
           <div class="calendar-card">
-            
-             
-               <div class="calendar-header">
-    <span class="material-icons nav-button" id="prevMonth">arrow_back_ios</span>
-    <h2 id="monthYear"></h2>
-    <span class="material-icons nav-button" id="nextMonth">arrow_forward_ios</span>
-    </div>
+            <div class="calendar-header">
+              <h2 id="monthYear"></h2>
+              <span class="material-icons expand-icon" id="toggleCalendar">expand_more</span>
+            </div>
             <div class="calendar-grid" id="calendarGrid">
               <div class="weekdays">
                 <span>Sun</span><span>Mon</span><span>Tue</span>
@@ -211,22 +208,19 @@ gap: 10px;
 
   <script type="module">
     import { db, auth } from "./firebase-init.js";
-    import { collection, query, orderBy, where, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { collection, query, orderBy, where, onSnapshot, getDocs  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm';
     Chart.register(LinearScale, CategoryScale, BarController, BarElement);
 
-    let currentCalendarDate = new Date(); // Global variable to keep track of the displayed month
-
     // Auth state management
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        await initializeCalendar(user, currentCalendarDate); // Pass currentCalendarDate
+        await initializeCalendar(user);
         await loadPendingTasks(user);
-        await checkUpcomingAlerts(user);
+         await checkUpcomingAlerts(user);
         await loadStatistics(user);
-
         // Hide loading screen
         document.getElementById('loadingScreen').style.display = 'none';
         // Show app content
@@ -240,150 +234,153 @@ gap: 10px;
       }
     });
 
-    async function initializeCalendar(user, dateToDisplay) {
-      const monthYearDisplay = document.getElementById('monthYear');
+    async function initializeCalendar(user) {
+      const monthYear = document.getElementById('monthYear');
       const datesGrid = document.getElementById('datesGrid');
-      const prevMonthBtn = document.getElementById('prevMonth');
-      const nextMonthBtn = document.getElementById('nextMonth');
+      const calendarGrid = document.getElementById('calendarGrid');
+      const toggleCalendar = document.getElementById('toggleCalendar');
+      const now = new Date();
 
-      // Set the current calendar date to the one passed in
-      currentCalendarDate = new Date(dateToDisplay.getFullYear(), dateToDisplay.getMonth(), 1);
 
-      monthYearDisplay.textContent = currentCalendarDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+      monthYear.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const firstDow = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
 
-      // Calculate first day of the month and number of days
-      const firstDayOfMonth = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1).getDay();
-      const daysInMonth = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0).getDate();
 
-      datesGrid.innerHTML = ''; // Clear existing dates
-
-      // Add blank spans for days before the 1st of the month
-      for (let i = 0; i < firstDayOfMonth; i++) {
-        const blankSpan = document.createElement('span');
-        blankSpan.className = 'blank';
-        datesGrid.appendChild(blankSpan);
+      datesGrid.innerHTML = '';
+      for (let i = 0; i < firstDow; i++) {
+        const b = document.createElement('span');
+        b.className = 'blank';
+        datesGrid.appendChild(b);
       }
 
-      // Fetch tasks for the current month to display dots
-      const taskDotColors = new Map();
-      const taskQuery = query(
-        collection(db, 'tasks'),
-        where("userId", "==", user.uid),
-        where("dueDate", ">=", new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1)),
-        where("dueDate", "<", new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1))
-      );
-      const taskSnapshot = await getDocs(taskQuery);
-      taskSnapshot.forEach(doc => {
-        const t = doc.data();
-        const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
-        const day = due.getDate();
+      const dayCount = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      
 
-        const currentDotColor = taskDotColors.get(day);
-        const taskType = (t.type || "").toLowerCase();
+const taskDotColors = new Map();  // key: day number, value: color
 
-        const color =
-          taskType === "assignment" ? "green" :
-          taskType === "project" ? "red" :
-          "black"; // Default color
+const taskQuery = query(collection(db, 'tasks'), where("userId", "==", user.uid));
+const taskSnapshot = await getDocs(taskQuery);
+taskSnapshot.forEach(doc => {
+  const t = doc.data();
+  const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
 
-        // Prioritize red if a project is due on that day
-        if (!currentDotColor || color === "red") {
-          taskDotColors.set(day, color);
-        }
+  if (due.getMonth() === now.getMonth() && due.getFullYear() === now.getFullYear()) {
+    const day = due.getDate();
+
+    // Prioritize red if both types exist on the same day
+    const current = taskDotColors.get(day);
+    const taskType = (t.type || "").toLowerCase();
+
+    const color =
+      taskType === "assignment" ? "green" :
+      taskType === "project" ? "red" :
+      "black";
+
+    if (!current || current !== "red") {
+      taskDotColors.set(day, color);
+    }
+  }
+});
+
+
+for (let d = 1; d <= dayCount; d++) {
+  const s = document.createElement('span');
+  s.textContent = d;
+
+  // Add red dot if task is due this day
+if (taskDotColors.has(d)) {
+  const dot = document.createElement('div');
+  const color = taskDotColors.get(d);
+  dot.style.cssText = `
+    width: 6px;
+    height: 6px;
+    background-color: ${color};
+    border-radius: 50%;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+  `;
+  s.style.position = 'relative';
+  s.appendChild(dot);
+}
+
+
+  datesGrid.appendChild(s);
+}
+
+
+
+
+
+      toggleCalendar.addEventListener('click', () => {
+        calendarGrid.classList.toggle('collapsed');
+        toggleCalendar.classList.toggle('collapsed');
       });
-
-      // Add spans for each day of the month
-      for (let d = 1; d <= daysInMonth; d++) {
-        const daySpan = document.createElement('span');
-        daySpan.textContent = d;
-
-        // Add task dot if a task is due on this day
-        if (taskDotColors.has(d)) {
-          const dot = document.createElement('div');
-          const dotColor = taskDotColors.get(d);
-          dot.style.cssText = `
-            width: 6px;
-            height: 6px;
-            background-color: ${dotColor};
-            border-radius: 50%;
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-          `;
-          daySpan.style.position = 'relative';
-          daySpan.appendChild(dot);
-        }
-        datesGrid.appendChild(daySpan);
-      }
 
       setupDateClickEvents(user);
-      highlightToday(currentCalendarDate); // Pass the current calendar date to highlightToday
+      highlightToday();
     }
 
-    // Event listeners for month navigation
-    document.getElementById('prevMonth').addEventListener('click', () => {
-      currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-      initializeCalendar(auth.currentUser, currentCalendarDate);
-    });
+   async function loadPendingTasks(user) {
+  const pending = document.getElementById('pendingTasks');
+  const q = query(
+    collection(db, 'tasks'),
+    where("userId", "==", user.uid),
+    orderBy('dueDate')
+    
+  );
 
-    document.getElementById('nextMonth').addEventListener('click', () => {
-      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-      initializeCalendar(auth.currentUser, currentCalendarDate);
-    });
+  // Return a promise that resolves after the first snapshot
+  return new Promise((resolve) => {
+    let first = true;
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
+      } else {
+        pending.innerHTML = '';
+        const now = new Date();
 
-    async function loadPendingTasks(user) {
-      const pending = document.getElementById('pendingTasks');
-      const q = query(
-        collection(db, 'tasks'),
-        where("userId", "==", user.uid),
-        orderBy('dueDate')
-      );
+        snapshot.forEach(doc => {
+          const t = doc.data();
+          try {
+            const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
 
-      return new Promise((resolve) => {
-        let firstLoad = true;
-        onSnapshot(q, (snapshot) => {
-          if (snapshot.empty) {
-            pending.innerHTML = "<p style='text-align:center;color:gray;'>No pending tasks.</p>";
-          } else {
-            pending.innerHTML = '';
-            const now = new Date();
+            if (due >= now) {
+              const ti = document.createElement('div');
+              const typeClass = t.type ? t.type.toLowerCase() : '';
+              ti.className = `task-item ${typeClass}`;  // Correct here - keep type class
 
-            snapshot.forEach(doc => {
-              const t = doc.data();
-              try {
-                const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
-
-                if (due >= now) {
-                  const taskItem = document.createElement('div');
-                  const typeClass = t.type ? t.type.toLowerCase() : '';
-                  taskItem.className = `task-item ${typeClass}`;
-
-                  taskItem.innerHTML = `
-                    <div class="task-info">
-                      <h4>${t.name}</h4>
-                      <p>${t.description}</p>
-                      <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
-                    </div>
-                  `;
-                  pending.appendChild(taskItem);
-                }
-              } catch (error) {
-                console.error('Error processing task:', error);
-              }
-            });
+              ti.innerHTML = `
+                <div class="task-info">
+                  <h4>${t.name}</h4>
+                  
+                  <p>${t.description}</p>
+                  <span class="deadline">Deadline: ${due.toLocaleDateString()}</span>
+                </div>
+              `;
+              pending.appendChild(ti);
+            }
+          } catch (error) {
+            console.error('Error processing task:', error);
           }
-          if (firstLoad) {
-            firstLoad = false;
-            resolve();
-          }
-        }, (error) => {
-          console.error("Error getting tasks:", error);
-          pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
-          resolve();
         });
-      });
-    }
+      }
+      // Only resolve the first time
+      if (first) {
+        first = false;
+        resolve();
+      }
+    }, (error) => {
+      console.error("Error getting tasks:", error);
+      pending.innerHTML = "<p style='text-align:center;color:red;'>Error loading tasks</p>";
+      resolve();
+    });
+  });
+}
+
+
+
 
     function setupDateClickEvents(user) {
       const datesGrid = document.getElementById('datesGrid');
@@ -391,38 +388,22 @@ gap: 10px;
         if (!s.classList.contains('blank')) {
           s.addEventListener('click', () => {
             highlight(s);
-            // Ensure you pass the correct year and month for the selected day
-            const selectedDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), parseInt(s.textContent));
-            showFor(selectedDate, user);
+            showFor(parseInt(s.textContent), user);
           });
         }
       });
     }
 
-    function highlightToday(displayedDate) {
+    function highlightToday() {
       const now = new Date();
       const datesGrid = document.getElementById('datesGrid');
-
-      // Only highlight "today" if the current month being displayed is the actual current month
-      if (now.getFullYear() === displayedDate.getFullYear() && now.getMonth() === displayedDate.getMonth()) {
-        const todayNum = now.getDate();
-        const todaySpan = [...datesGrid.children].find(ch => ch.textContent == todayNum && !ch.classList.contains('blank'));
-        if (todaySpan) {
-          highlight(todaySpan);
-          // When highlighting today, show schedule for actual today
-          showFor(now, auth.currentUser);
-        } else {
-            // If today is not in the currently displayed month, clear the schedule
-            clearSchedule();
-        }
-      } else {
-          // If a different month is displayed, clear any "selected-date" highlight and clear schedule
-          const selectedEl = document.querySelector('.selected-date');
-          if (selectedEl) selectedEl.classList.remove('selected-date');
-          clearSchedule();
+      const todayNum = now.getDate();
+      const todaySpan = [...datesGrid.children].find(ch => ch.textContent == todayNum);
+      if (todaySpan) {
+        highlight(todaySpan);
+        showFor(todayNum, auth.currentUser);
       }
     }
-
 
     function to12HourFormat(hours, minutes) {
       const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -430,27 +411,28 @@ gap: 10px;
       return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
     }
 
-    async function showFor(selectedDate, user) {
+    async function showFor(dayNum, user) {
       const scheduleList = document.getElementById('scheduleList');
       clearSchedule();
-
-      const selectedDayOfWeek = selectedDate.toLocaleString('en-US', { weekday: 'short' });
+      const sel = new Date(new Date().getFullYear(), new Date().getMonth(), dayNum);
+      const wd = sel.toLocaleString('en-US', { weekday: 'short' });
 
       const q = query(
         collection(db, 'classes'),
         where("userId", "==", user.uid),
-        orderBy('time')
+        orderBy('time')  // Added missing comma after where clause
       );
 
+      // Proper onSnapshot structure
       onSnapshot(q,
-        (snapshot) => {
+        (snapshot) => {  // Success callback
           let found = false;
-          scheduleList.innerHTML = '';
+          scheduleList.innerHTML = '';  // Clear previous items
 
           snapshot.forEach(doc => {
             const c = doc.data();
             const classDays = c.days.split(/,\s*/).map(d => d.substring(0, 3));
-            if (classDays.includes(selectedDayOfWeek)) {
+            if (classDays.includes(wd)) {
               found = true;
               const [startTime, endTime] = c.time.split(' - ');
               const [startHours, startMinutes] = startTime.split(':');
@@ -458,16 +440,16 @@ gap: 10px;
 
               const timeRange = `${to12HourFormat(parseInt(startHours), parseInt(startMinutes))} – ${to12HourFormat(parseInt(endHours), parseInt(endMinutes))}`;
 
-              const item = document.createElement('div');
-              item.className = 'schedule-item';
-              item.innerHTML = `
-                <div class="time">${timeRange}</div>
-                <div class="details">
-                  <h4>${c.name || 'Unnamed Class'}</h4>
-                  <p>${c.instructor || ''}</p>
-                </div>
-              `;
-              scheduleList.appendChild(item);
+              const it = document.createElement('div');
+              it.className = 'schedule-item';
+              it.innerHTML = `
+                        <div class="time">${timeRange}</div>
+                        <div class="details">
+                            <h4>${c.name || 'Unnamed Class'}</h4>
+                            <p>${c.instructor || ''}</p>
+                        </div>
+                    `;
+              scheduleList.appendChild(it);
             }
           });
 
@@ -475,7 +457,7 @@ gap: 10px;
             scheduleList.innerHTML = "<p style='text-align:center;color:gray;'>No classes on this day.</p>";
           }
         },
-        (error) => {
+        (error) => {  // Error callback
           console.error("Error getting classes:", error);
           scheduleList.innerHTML = "<p style='text-align:center;color:red;'>Error loading schedule</p>";
         }
@@ -493,7 +475,7 @@ gap: 10px;
       el.classList.add('selected-date');
     }
 
-    // FAB functionality (existing)
+    // FAB functionality
     const fabMain = document.getElementById('fabMain');
     const fabOpts = document.querySelector('.fab-options');
     if (fabMain) {
@@ -503,53 +485,52 @@ gap: 10px;
         fabMain.textContent = fabMain.classList.contains('open') ? 'close' : 'add';
       });
     }
+async function checkUpcomingAlerts(user) {
+  const now = new Date();
+  const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+  const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    // ... (rest of your existing checkUpcomingAlerts, loadStatistics, showNotification functions) ...
-    async function checkUpcomingAlerts(user) {
-      const now = new Date();
-      const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-      const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  const classQuery = query(collection(db, "classes"), where("userId", "==", user.uid));
+  const taskQuery = query(collection(db, "tasks"), where("userId", "==", user.uid));
 
-      const classQuery = query(collection(db, "classes"), where("userId", "==", user.uid));
-      const taskQuery = query(collection(db, "tasks"), where("userId", "==", user.uid));
+  let showAlert = false;
+  let alertMessages = [];
 
-      let showAlert = false;
-      let alertMessages = [];
+  // Check classes
+  const classSnapshot = await getDocs(classQuery);
+  classSnapshot.forEach(doc => {
+    const c = doc.data();
+    const classDays = c.days.split(/,\s*/);
+    const today = now.toLocaleString('en-US', { weekday: 'long' });
 
-      // Check classes
-      const classSnapshot = await getDocs(classQuery);
-      classSnapshot.forEach(doc => {
-        const c = doc.data();
-        const classDays = c.days.split(/,\s*/);
-        const today = now.toLocaleString('en-US', { weekday: 'long' });
+    if (classDays.includes(today)) {
+      const [startH, startM] = c.time.split(" - ")[0].split(":").map(Number);
+      const classTime = new Date(now);
+      classTime.setHours(startH, startM, 0, 0);
 
-        if (classDays.includes(today)) {
-          const [startH, startM] = c.time.split(" - ")[0].split(":").map(Number);
-          const classTime = new Date(now);
-          classTime.setHours(startH, startM, 0, 0);
-
-          if (classTime > now && classTime <= twoHoursLater) {
-            alertMessages.push(`Upcoming class "${c.name}" starts at ${c.time.split(" - ")[0]}`);
-            showAlert = true;
-          }
-        }
-      });
-
-      // Check tasks
-      const taskSnapshot = await getDocs(taskQuery);
-      taskSnapshot.forEach(doc => {
-        const t = doc.data();
-        const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
-        if (due > now && due <= nextDay) {
-          alertMessages.push(`Task "${t.name}" is due soon (${due.toLocaleDateString()})`);
-          showAlert = true;
-        }
-      });
-
-      if (showAlert) {
-        alertMessages.forEach(msg => showNotification(msg));
+      if (classTime > now && classTime <= twoHoursLater) {
+        alertMessages.push(`Upcoming class "${c.name}" starts at ${c.time.split(" - ")[0]}`);
+        showAlert = true;
       }
     }
+  });
+
+  // Check tasks
+  const taskSnapshot = await getDocs(taskQuery);
+  taskSnapshot.forEach(doc => {
+    const t = doc.data();
+    const due = t.dueDate?.toDate ? t.dueDate.toDate() : new Date(t.dueDate);
+    if (due > now && due <= nextDay) {
+      alertMessages.push(`Task "${t.name}" is due soon (${due.toLocaleDateString()})`);
+      showAlert = true;
+    }
+  });
+
+  if (showAlert) {
+   alertMessages.forEach(msg => showNotification(msg));
+
+  }
+}
 
     // Statistics Chart
     async function loadStatistics(user) {
@@ -559,18 +540,17 @@ gap: 10px;
       onSnapshot(classesRef, (classSnap) => {
         onSnapshot(tasksRef, (taskSnap) => {
           const totalClasses = classSnap.size;
+          const totalTasks = taskSnap.size;
           let completedTasks = 0;
           let pendingTasks = 0;
 
           taskSnap.forEach(doc => {
             const task = doc.data();
-            // Assuming task.completed is a boolean or can be evaluated as such
             task.completed ? completedTasks++ : pendingTasks++;
           });
-          const totalTasks = completedTasks + pendingTasks;
 
           const ctx = document.getElementById('myBarChart').getContext('2d');
-          if (window.myChart) window.myChart.destroy(); // Destroy previous chart instance
+          if (window.myChart) window.myChart.destroy();
 
           window.myChart = new Chart(ctx, {
             type: 'bar',
@@ -622,38 +602,37 @@ gap: 10px;
 
     window.auth = auth;
 
+
     function showNotification(message) {
-      const container = document.getElementById('alertBoxContainer');
-      const box = document.createElement('div');
-      box.textContent = message;
+  const container = document.getElementById('alertBoxContainer');
+  const box = document.createElement('div');
+  box.textContent = message;
 
-      box.style.cssText = `
-        background-color: white;
-        color: black;
-        font-weight: bold;
-        padding: 12px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        font-size: 0.95rem;
-        max-width: 300px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      `;
-      container.appendChild(box);
+  box.style.cssText = `
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 0.95rem;
+    max-width: 300px;
+    animation: fadein 0.3s ease, fadeout 0.5s ease 4.5s;
+    opacity: 0;
+  `;
 
-      // Fade-in
-      setTimeout(() => box.style.opacity = 1, 10);
-      // Fade-out and remove
-      setTimeout(() => {
-        box.style.opacity = 0;
-        setTimeout(() => {
-          if (container.contains(box)) { // Check if still in DOM before removing
-            container.removeChild(box);
-          }
-        }, 500);
-      }, 5000);
-    }
-</script>
+  // Fade-in
+  setTimeout(() => box.style.opacity = 1, 10);
+  // Fade-out and remove
+  setTimeout(() => {
+    box.style.opacity = 0;
+    setTimeout(() => container.removeChild(box), 500);
+  }, 5000);
+
+  container.appendChild(box);
+}
+
+  </script>
 
   <script>
 
